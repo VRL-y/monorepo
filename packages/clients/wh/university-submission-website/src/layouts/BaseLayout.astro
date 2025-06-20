@@ -14,7 +14,7 @@ const currentLocale = Astro.currentLocale;
 const { widget } = getLocalizedSettings(currentLocale);
 
 type Props = {
-    seo?: SEOProps | MinimalSeo;
+    seo?: SEOProps;
 };
 
 const { seo } = Astro.props;
