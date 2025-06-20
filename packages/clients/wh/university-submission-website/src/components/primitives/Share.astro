@@ -267,29 +267,3 @@ const availableShare = [
         }
     }
 </style>
-
-<script>
-    const shareButton = document.querySelector(".share-button");
-    const Sharealog = document.querySelector(".share-dialog");
-    const closeButton = document.querySelector(".close-button");
-
-    shareButton?.addEventListener("click", (event) => {
-        if (navigator.share) {
-            navigator
-                .share({
-                    title: "WebShare API Demo",
-                    url: window.location.href,
-                })
-                .then(() => {
-                    console.log("Thanks for sharing!");
-                })
-                .catch(console.error);
-        } else {
-            Sharealog?.classList.add("is-open");
-        }
-    });
-
-    closeButton?.addEventListener("click", (event) => {
-        Sharealog?.classList.remove("is-open");
-    });
-</script>
