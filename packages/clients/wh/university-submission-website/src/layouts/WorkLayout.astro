@@ -12,26 +12,26 @@ import { defaultLocale } from "site";
 import BaseLayout from "./BaseLayout.astro";
 
 type Props = {
-  frontmatter: CollectionEntry<"works">;
+    frontmatter: CollectionEntry<"works">;
 };
 
 const currentLocale = Astro.currentLocale;
 
 interface WorkLayoutLocale {
-  visitProject: string;
+    visitProject: string;
 }
 
 interface ComponentLocales {
-  [key: string]: WorkLayoutLocale;
+    [key: string]: WorkLayoutLocale;
 }
 
 const componentLocales: ComponentLocales = {
-  it: {
-    visitProject: "Visita progetto",
-  },
-  en: {
-    visitProject: "Visit project",
-  },
+    de: {
+        visitProject: "Projekt besuchen",
+    },
+    en: {
+        visitProject: "Visit project",
+    },
 };
 
 const l = componentLocales[currentLocale ?? defaultLocale];
@@ -39,58 +39,63 @@ const l = componentLocales[currentLocale ?? defaultLocale];
 const { frontmatter } = Astro.props;
 
 const videoSrc = frontmatter.data?.video
-  ? await loadVideo(frontmatter.data.video)
-  : null;
+    ? await loadVideo(frontmatter.data.video)
+    : null;
 ---
 
 <BaseLayout>
-  <section class="py-32 md:py-56">
-    <Container>
-      <div class="text-center">
-        <Title level={1}>{frontmatter.data.title}</Title>
-        <p class="mx-auto max-w-2xl pt-8 text-base text-slate-500">
-          <em>{frontmatter.data?.description}</em>
-        </p>
-        {
-          frontmatter.data.link && (
-            <Link
-              href={frontmatter.data.link}
-              target="_blank"
-              class="mt-10"
-              style="outline"
-            >
-              {l.visitProject}
-              <Icon
-                name="iconamoon:arrow-top-right-1-thin"
-                class="ml-2 inline-block h-6 w-6"
-              />
-            </Link>
-          )
-        }
-      </div>
-      <div class="flex w-full flex-col items-center justify-center pt-10">
-        {
-          "video" in frontmatter.data && frontmatter.data?.video && videoSrc ? (
-            <video autoplay loop muted playsinline>
-              <source src={videoSrc} />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            "cover" in frontmatter.data &&
-            frontmatter.data?.cover && (
-              <Image
-                class="lg:rounded-5xl w-full rounded-4xl lg:w-auto lg:min-w-[50rem]"
-                src={frontmatter.data?.cover}
-                alt={`Cover image for ${frontmatter.data?.title}`}
-              />
-            )
-          )
-        }
-        <Prose><slot /></Prose>
-        <div class="mx-auto w-full max-w-3xl pt-20">
-          <Share />
-        </div>
-      </div>
-    </Container>
-  </section>
+    <section class="py-32 md:py-56">
+        <Container>
+            <div class="text-center">
+                <Title level={1}>{frontmatter.data.title}</Title>
+                <p class="mx-auto max-w-2xl pt-8 text-base text-slate-500">
+                    <em>{frontmatter.data?.description}</em>
+                </p>
+                {
+                    frontmatter.data.link && (
+                        <Link
+                            href={frontmatter.data.link}
+                            target="_blank"
+                            class="mt-10"
+                            style="outline">
+                            {l.visitProject}
+                            <Icon
+                                name="iconamoon:arrow-top-right-1-thin"
+                                class="ml-2 inline-block h-6 w-6"
+                            />
+                        </Link>
+                    )
+                }
+            </div>
+            <div class="flex w-full flex-col items-center justify-center pt-10">
+                {
+                    "video" in frontmatter.data &&
+                    frontmatter.data?.video &&
+                    videoSrc ? (
+                        <video
+                            autoplay
+                            loop
+                            muted
+                            playsinline>
+                            <source src={videoSrc} />
+                            Your browser does not support the video tag.
+                        </video>
+                    ) : (
+                        "cover" in frontmatter.data &&
+                        frontmatter.data?.cover && (
+                            <Image
+                                class="lg:rounded-5xl rounded-4xl w-full lg:w-auto lg:min-w-[50rem]"
+                                src={frontmatter.data?.cover}
+                                alt={`Cover image for ${frontmatter.data?.title}`}
+                            />
+                        )
+                    )
+                }
+                <Prose><slot /></Prose>
+                <div class="mx-auto w-full max-w-3xl pt-20">
+                    <Share />
+                </div>
+            </div>
+        </Container>
+    </section>
 </BaseLayout>
