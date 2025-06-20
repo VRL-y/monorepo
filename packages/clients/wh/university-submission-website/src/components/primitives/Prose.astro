@@ -1,0 +1,12 @@
+---
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "prose prose-headings:font-normal prose-headings:tracking-tighter prose-headings:text-black prose-a:text-slate-500 hover:prose-a:text-black prose-blockquote:border-l-slate-950 prose-blockquote:text-slate-500 prose-code:text-black prose-pre:rounded-3xl prose-li:marker:text-slate-500 mx-auto w-full max-w-3xl pt-12 text-lg text-slate-900",
+    className,
+  ]}
+>
+  <slot />
+</div>

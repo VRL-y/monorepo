@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "icon": "whatsapp",
+  "link": "https://api.whatsapp.com/send?phone=+49123456789"
+}

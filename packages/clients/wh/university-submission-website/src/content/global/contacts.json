@@ -1,0 +1,21 @@
+{
+  "phone": "+1 1234567890",
+  "mail": "info@yourcompany.com",
+  "socials": [
+    {
+      "title": "Facebook",
+      "link": "https://facebook.com",
+      "icon": "ic:baseline-facebook"
+    },
+    {
+      "title": "Instagram",
+      "link": "https://www.instagram.com/",
+      "icon": "mdi:instagram"
+    },
+    {
+      "title": "Youtube",
+      "link": "https://www.youtube.com/",
+      "icon": "mdi:youtube"
+    }
+  ]
+}

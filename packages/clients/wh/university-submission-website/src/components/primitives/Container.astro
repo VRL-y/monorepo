@@ -1,0 +1,27 @@
+---
+interface Props {
+  tag?: "section" | "div";
+  id?: string;
+  class?: string;
+  [x: string]: unknown;
+}
+
+const { class: className, id, tag = "section", ...rest } = Astro.props;
+
+const Element = tag;
+---
+
+<Element
+  id={id}
+  class:list={["container-base mx-auto max-w-[90rem]", className]}
+  {...rest}
+>
+  <slot />
+</Element>
+
+<style>
+  .container-base {
+    padding-left: var(--base-padding-x);
+    padding-right: var(--base-padding-x);
+  }
+</style>

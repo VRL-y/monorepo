@@ -1,0 +1,27 @@
+---
+title: Contact
+type: informational
+lastUpdateDate: 2025-03-09
+hideTitle: false
+addPadding: false
+seo:
+  title: "Contatta Your Company Studio: Entra in Contatto per Soluzioni Web Innovative"
+  description: "Contatta Your Company Studio per servizi esperti di web design e SEO. Connettiti con noi per discutere del tuo progetto ed esplorare soluzioni web all'avanguardia."
+  author: Your Company
+---
+
+{% Container %}
+
+{% Contact
+  title="Contact"
+  fields=[
+    {title: "Nome Completo", placeholder: "John Doe", required: true, type: "text"},
+    {title: "Email", placeholder: "contact@email.com", required: true, type: "email"},
+    {title: "Telefono", placeholder: "+1 345-678", type: "tel"},
+    {title: "Orario per ricevere la chiamata", placeholder: "10:00 AM to 4:00 PM", type: "text"},
+    {title: "Messaggio", placeholder: "Scrivi qui il tuo messaggio", type: "textarea", width: 2},
+    {title: "Invia", type: "submit", width: 2}
+  ]
+/%}
+
+{% /Container %}

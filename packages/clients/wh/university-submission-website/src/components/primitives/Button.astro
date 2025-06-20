@@ -1,0 +1,19 @@
+---
+import Link, {
+  type Props as LinkProps,
+} from "@/components/primitives/Link.astro";
+
+export interface ButtonProps extends LinkProps {
+  title?: string;
+}
+
+const { ...props } = Astro.props as ButtonProps;
+
+const computedProps = {
+  ...props,
+  tag: "button",
+  style: "button",
+} as LinkProps;
+---
+
+<Link {...computedProps}><slot /></Link>

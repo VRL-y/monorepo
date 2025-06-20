@@ -11,7 +11,7 @@
   },
   "workspaces": [
     "packages/*",
-    "packages/clients/*",
+    "packages/clients/**",
     "packages/integrations/*",
     "packages/internal/*"
   ],

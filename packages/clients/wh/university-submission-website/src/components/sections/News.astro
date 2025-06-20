@@ -1,0 +1,26 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import BlogPreview from "@/components/sections/BlogPreview.astro";
+
+const currentLocale = Astro.currentLocale;
+
+const posts = await getCollection("posts");
+
+const allPosts = posts
+    .map((post) => {
+        const [lang, ...slug] = post.slug.split("/");
+        return {
+            ...post,
+            lang: lang,
+            slug: post.slug.startsWith("/") ? post.slug : `/${post.slug}`,
+        };
+    })
+    .filter(
+        (post) => post.lang === currentLocale && !post.data.hidden
+    ) as CollectionEntry<"posts">[];
+---
+
+<div
+    class="grid auto-cols-fr grid-cols-1 grid-rows-[auto] gap-x-[1.88rem] gap-y-10 pb-40 text-sm font-medium sm:grid-cols-2 lg:grid-cols-3">
+    {allPosts.map((post) => <BlogPreview {post} />)}
+</div>

@@ -1,0 +1,94 @@
+---
+import "@/styles/global.css";
+import { getLocalizedSettings } from "@/lib/localization-helpers";
+import { SEO, type SEOProps } from "astro-seo";
+
+type Props = {
+    seo?: SEOProps | MinimalSeo;
+};
+
+const currentLocale = Astro.currentLocale;
+
+const { seo: defaultSeo, style } = getLocalizedSettings(currentLocale);
+
+const { seo: seoProp } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+
+const pathWithSlash = Astro.url.pathname.endsWith("/")
+    ? Astro.url.pathname
+    : `${Astro.url.pathname}/`;
+
+const shareImage = new URL(
+    `${pathWithSlash}og.png`, // Für dynamische Generierung
+    new URL(pathWithSlash, Astro.site)
+).toString();
+
+const baseSeo: SEOProps = {
+    title: seoProp?.title ?? defaultSeo.title,
+    description: seoProp?.description ?? defaultSeo.description,
+    charset: "UTF-8",
+    canonical: canonicalURL,
+    openGraph: {
+        basic: {
+            url: canonicalURL,
+            title: seoProp?.title ?? defaultSeo.title,
+            type: "website",
+            image: shareImage,
+        },
+        optional: {
+            description: seoProp?.description ?? defaultSeo.description,
+            siteName: seoProp?.title ?? defaultSeo.title,
+        },
+    },
+    twitter: {
+        site: canonicalURL,
+    },
+    extend: {
+        meta: [
+            {
+                name: "publisher",
+                content: (seoProp as MinimalSeo)?.author ?? defaultSeo.author,
+            },
+            {
+                name: "author",
+                content: (seoProp as MinimalSeo)?.author ?? defaultSeo.author,
+            },
+            {
+                name: "msapplication-TileColor",
+                content: style.theme.colors.tileColor,
+            },
+        ],
+    },
+};
+
+const seo = {
+    ...baseSeo,
+    ...seoProp,
+};
+---
+
+<head>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    />
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="IE=edge,chrome=1"
+    />
+
+    <SEO {...seo} />
+
+    <!-- LIBS -->
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.13.5/dist/cdn.min.js"
+    ></script>
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/@ryangjchandler/alpine-clipboard@2.3.0/dist/alpine-clipboard.js"
+    ></script>
+
+    <slot />
+</head>

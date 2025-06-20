@@ -1,0 +1,28 @@
+---
+import { Image } from "astro:assets";
+import googleWhite from "@/assets/pages/homepage/google-white.png";
+
+interface Props {
+  testimonial: string;
+  name: string;
+}
+
+const { testimonial, name } = Astro.props;
+---
+
+<div class="pt-20 pb-14 text-sm font-medium">
+  <div class="flex-grow rounded-3xl bg-black px-16 py-20">
+    <div class="flex flex-col items-center justify-center text-center">
+      <Image
+        src={googleWhite}
+        alt="Google logo"
+        class="mb-8 inline-block h-10 w-full max-w-[8.13rem] object-contain align-middle"
+      />
+      <h2 class="mb-1 text-[2.13rem] leading-9 text-white lg:max-w-[60%]">
+        "{testimonial}"
+      </h2>
+      <div class="m-auto mx-auto my-8 h-0 w-12 bg-white/[0.9]"></div>
+      <h3 class="text-lg text-white">{name}</h3>
+    </div>
+  </div>
+</div>

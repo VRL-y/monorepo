@@ -1,0 +1,98 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { loadVideo } from "@/lib/asset-helpers";
+import { translatePath, unlocalizedUrl } from "@/lib/localization-helpers";
+import { Icon } from "astro-icon/components";
+import { defaultLocale } from "site";
+
+const currentLocale = Astro.currentLocale;
+
+interface Props {
+    work: CollectionEntry<"works">;
+}
+
+const { work } = Astro.props;
+
+const unlocalizedPath = unlocalizedUrl(work.slug);
+const localizedPath = translatePath(
+    currentLocale ?? defaultLocale,
+    `/work${unlocalizedPath}`
+);
+
+const videoSrc = work.data?.video ? await loadVideo(work.data.video) : null;
+---
+
+<div class="relative flex flex-col items-stretch justify-center">
+    <a
+        href={localizedPath}
+        class="work-item group relative flex items-center justify-center overflow-hidden rounded-3xl">
+        <div
+            class="play-button absolute left-1/2 top-1/2 z-10 flex max-w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+            <div
+                class="flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white/[0.75] text-black backdrop-blur-[5px]">
+                <Icon
+                    name="iconamoon:arrow-top-right-1-thin"
+                    class="inline-block h-12 w-12 max-w-full align-middle"
+                />
+            </div>
+        </div>
+        {
+            (
+                <video
+                    class="inline-block h-96 min-h-full w-full max-w-full object-cover align-middle"
+                    autoplay
+                    loop
+                    muted
+                    playsinline>
+                    <source src={videoSrc} />
+                </video>
+            )
+        }
+    </a>
+    <div class="mt-5">
+        <div class="flex flex-row items-center justify-between gap-4">
+            <a
+                href={localizedPath}
+                class="menu-item relative flex max-w-full flex-col items-start">
+                <h3 class="cursor-pointer text-[1.75rem] leading-8">
+                    {work.data.title}
+                </h3>
+                <div class="w-full cursor-pointer overflow-hidden">
+                    <div class="mt-1 h-0.5 w-full"></div>
+                </div>
+            </a>
+            <p class="text-lg text-neutral-400">
+                {Array.from(work.data.tags).join(", ")}
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    a.menu-item::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        bottom: 0;
+        transform-origin: right;
+        transform: scaleX(0);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    a.menu-item:hover::before {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+
+    .play-button {
+        width: 1rem;
+        height: 1rem;
+    }
+    .work-item:hover .play-button {
+        width: 7rem;
+        height: 7rem;
+    }
+</style>

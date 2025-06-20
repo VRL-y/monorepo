@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PageLayout from "@/layouts/PageLayout.astro";
+import { getCollectionStaticPaths } from "@/lib/collection-helpers";
+
+export interface Props {
+    data: CollectionEntry<"pages">;
+}
+
+export async function getStaticPaths() {
+    return getCollectionStaticPaths("pages");
+}
+
+const { data: page } = Astro.props;
+const { Content } = await page.render();
+
+export const prerender = true;
+---
+
+<PageLayout frontmatter={page}>
+    <Content />
+</PageLayout>

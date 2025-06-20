@@ -1,0 +1,35 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import Head from "@/components/Head.astro";
+import Footer from "@/components/footers/Footer.astro";
+import Navigation from "@/components/headers/Navigation.astro";
+import LinesWrapper from "@/components/primitives/LinesWrapper.astro";
+import LoadingIndicator from "@/components/primitives/LoadingIndicator.astro";
+import Widget from "@/components/primitives/Widget.astro";
+import { getLocalizedSettings } from "@/lib/localization-helpers";
+import type { SEOProps } from "astro-seo";
+
+const currentLocale = Astro.currentLocale;
+
+const { widget } = getLocalizedSettings(currentLocale);
+
+type Props = {
+    seo?: SEOProps;
+};
+
+const { seo } = Astro.props;
+---
+
+<html lang={currentLocale}>
+    <Head seo={seo}>
+        <ViewTransitions />
+    </Head>
+    <body>
+        <LoadingIndicator />
+        <LinesWrapper />
+        <Navigation showTopBar />
+        <slot />
+        {widget.enabled && <Widget />}
+        <Footer />
+    </body>
+</html>

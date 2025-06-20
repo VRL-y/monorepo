@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostLayout from "@/layouts/PostLayout.astro";
+import { getCollectionStaticPaths } from "@/lib/collection-helpers";
+
+export interface Props {
+    data: CollectionEntry<"posts">;
+}
+
+export async function getStaticPaths() {
+    return await getCollectionStaticPaths("posts", "en");
+}
+
+const { data: post } = Astro.props;
+const { Content } = await post.render();
+
+export const prerender = true;
+---
+
+<PostLayout frontmatter={post}>
+    <Content />
+</PostLayout>

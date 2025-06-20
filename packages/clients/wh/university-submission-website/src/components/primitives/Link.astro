@@ -1,0 +1,96 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { Icon } from "astro-icon/components";
+import { defaultLocale } from "site.config";
+
+const currentLocale = Astro.currentLocale;
+
+export interface Props {
+  href?: string;
+  tag?: "a" | "button";
+  size?: "xs" | "sm" | "md" | "lg";
+  block?: boolean;
+  style?: "primary" | "button" | "outline" | "buttonLight";
+  icon?: string;
+  class?: string;
+  localized?: boolean;
+  [x: string]: unknown;
+}
+
+export type LinkType = Props & {
+  title?: string;
+};
+
+const {
+  href,
+  block,
+  icon,
+  size = "md",
+  style = "primary",
+  localized = true,
+  class: className,
+  ...rest
+} = Astro.props as Props;
+
+const sizes = {
+  xs: "",
+  sm: "px-4 py-2",
+  md: "px-5 py-2.5 text-xl text-lg",
+  lg: "px-8 py-3 text-2xl",
+};
+
+const iconSizes = {
+  xs: 20,
+  sm: 25,
+  md: 30,
+  lg: 40,
+};
+
+const Tag = Astro.props.tag || "a";
+
+if (Tag === "a" && !href) {
+  throw new Error("The `href` prop is required when using the `a` tag.");
+}
+
+const styles = {
+  primary: "",
+  button:
+    "button-primary bg-black text-white items-center justify-center py-2.5 px-6 text-center inline-block max-w-full rounded-md font-semibold",
+  buttonLight:
+    "button-primary bg-white text-black items-center justify-center py-3.5 px-6 text-center inline-block max-w-full rounded-md font-bold",
+  outline:
+    "hover:bg-primary-800 hover:text-white border border-primary-100 rounded-md",
+};
+---
+
+<Tag
+  href={localized && href?.startsWith("/")
+    ? getRelativeLocaleUrl(currentLocale ?? defaultLocale, href)
+    : href}
+  class:list={[
+    block ? "flex" : "inline-flex",
+    style != "primary" ? sizes[size] : null,
+    style != "primary" ? "justify-center" : null,
+    styles[style],
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+  {icon && <Icon name={icon} size={iconSizes[size]} />}
+</Tag>
+
+<style>
+  .button-primary {
+    transition: color 0.2s;
+  }
+  .button-primary:hover {
+    opacity: 0.85;
+  }
+  .button-primary [data-icon="iconamoon:arrow-top-right-1-thin"] {
+    transition: transform 0.2s;
+  }
+  .button-primary:hover [data-icon="iconamoon:arrow-top-right-1-thin"] {
+    transform: translate(3px, -3px);
+  }
+</style>

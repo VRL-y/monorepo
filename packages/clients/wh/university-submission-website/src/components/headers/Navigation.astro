@@ -1,0 +1,371 @@
+---
+import { getLocalizedSettings } from "@/lib/localization-helpers";
+import { translatePath, unlocalizedUrl } from "@/lib/localization-helpers";
+import { defaultLocale, locales } from "site";
+
+const currentLocale = Astro.currentLocale;
+
+function getTranslatedUrl(locale: string): string {
+    const unlocalizedPath = unlocalizedUrl(Astro.url.pathname);
+    return translatePath(locale, unlocalizedPath);
+}
+
+function isActiveLocale(locale: string): boolean {
+    return locale === currentLocale;
+}
+
+const { header, contacts } = getLocalizedSettings(currentLocale);
+
+const logoPath = header.logo?.imagePath;
+---
+
+<style>
+    .menu-icon {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+    }
+    .menu-icon .menu-icon__checkbox {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        cursor: pointer;
+        z-index: 2;
+        -webkit-touch-callout: none;
+        position: absolute;
+        opacity: 0;
+    }
+    .menu-icon div {
+        margin: auto;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 22px;
+        height: 12px;
+    }
+    .menu-icon span {
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: var(--bar-bg, #000);
+        border-radius: 5rem;
+        transition: all 0.2s cubic-bezier(0.1, 0.82, 0.76, 0.965);
+    }
+    .menu-icon span:first-of-type {
+        top: 0;
+    }
+    .menu-icon span:last-of-type {
+        bottom: 0;
+    }
+    .menu-icon.active span:first-of-type,
+    .menu-icon .menu-icon__checkbox:checked + div span:first-of-type {
+        transform: rotate(45deg);
+        top: 5px;
+    }
+    .menu-icon.active span:last-of-type,
+    .menu-icon .menu-icon__checkbox:checked + div span:last-of-type {
+        transform: rotate(-45deg);
+        bottom: 5px;
+    }
+    .menu-icon.active:hover span:first-of-type,
+    .menu-icon.active:hover span:last-of-type,
+    .menu-icon:hover .menu-icon__checkbox:checked + div span:first-of-type,
+    .menu-icon:hover .menu-icon__checkbox:checked + div span:last-of-type {
+        width: 22px;
+    }
+    @media (min-width: 1024px) {
+        .menu-icon:hover span:first-of-type {
+            width: 26px;
+        }
+        .menu-icon:hover span:last-of-type {
+            width: 12px;
+        }
+    }
+    #navigation {
+        pointer-events: none;
+    }
+    [data-nav-border-reveal] {
+        --tw-border-opacity: 0;
+    }
+    .active-locale {
+        font-weight: bolder;
+    }
+</style>
+
+<style is:global>
+    [data-nav-text-reveal] {
+        opacity: 0;
+    }
+    [data-nav-text-reveal] > div {
+        position: relative;
+        margin: 0;
+    }
+    .split-parent {
+        overflow: hidden;
+    }
+    .split-child {
+        display: inline-block;
+    }
+</style>
+
+<header class="fixed z-30 w-full">
+    <div
+        class="left-0 right-0 top-0 grid auto-cols-fr grid-cols-2 grid-rows-[auto] items-center justify-between gap-4 px-6 py-3.5 lg:grid-cols-2 lg:px-20">
+        <div
+            class="relative z-20 flex flex-wrap items-center justify-start text-blue-700">
+            <a
+                href={translatePath(currentLocale ?? defaultLocale, "/")}
+                id="header-logo"
+                class="inline-block max-w-full justify-self-start text-blue-700 underline lg:justify-self-center">
+                <svg
+                    id="CompanyLogo"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    version="1.1"
+                    viewBox="0 0 300 300">
+                    <!-- Generator: Adobe Illustrator 29.4.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 152)  -->
+                    <path
+                        d="M28,237.9l4.9,16.4,5.7-15.9c.3-1,.6-1.7.7-2.3.1-.6.2-1,.2-1.5,0-.6-.2-1.1-.6-1.3-.4-.2-1.1-.3-2.1-.3v-1.4h8.9v1.4c-1.1,0-2,.2-2.5.7-.6.5-1.1,1.2-1.4,2.3l-9.2,24.2h-1.3l-7-20.8-7.8,20.8h-1.3l-7.6-21c-.6-1.6-1.1-2.8-1.6-3.7-.5-.9-1-1.5-1.6-1.9-.6-.4-1.4-.5-2.4-.5v-1.4h11.9v1.4c-1.2,0-2.1.1-2.6.3-.5.2-.7.6-.7,1.3s0,.7.2,1.1c.1.4.2.9.4,1.5l5.6,16.9,6.3-17.5c-.7-1.4-1.2-2.4-1.8-2.9-.5-.5-1.1-.7-1.8-.7v-1.4h11.2v1.4c-1.4,0-2.3.1-2.7.3-.4.2-.6.6-.6,1.2s0,.8.2,1.3c.1.5.3,1.2.6,2Z"
+                    ></path>
+                    <path
+                        d="M49.7,249.8l5.3-2.3v-1.5c0-1.5-.3-2.7-.9-3.4-.6-.7-1.6-1.1-2.9-1.1s-1.3.2-1.7.5c-.4.3-.7,1-1,1.9-.3.7-.5,1.1-.8,1.4-.3.2-.6.4-1.1.4-1.2,0-1.8-.6-1.8-1.8s.6-2.1,1.9-2.7c1.2-.6,3-1,5.3-1s4.2.4,5.2,1.3c1,.9,1.5,2.3,1.5,4.4v8.2c0,1.5.1,2.6.4,3.2.3.6.8,1,1.4,1s.5,0,.9-.2c.3-.1.6-.3.7-.6l.5.9c-.3.6-.8,1-1.6,1.4-.8.4-1.6.6-2.4.6s-1.8-.3-2.4-1c-.5-.7-.8-1.6-.8-2.9h-.2c-.7,1.2-1.5,2.1-2.7,2.8-1.1.7-2.4,1-3.7,1s-2.7-.4-3.6-1.2c-.9-.8-1.3-1.8-1.3-3.2s.4-2.2,1.3-3.2c.9-1,2.4-1.9,4.6-2.9ZM55,251.9v-2.9c-2.8,1-4.8,2.1-5.8,3.1-1.1,1-1.6,2-1.6,3.1s.3,1.5.8,2c.5.5,1.2.8,2,.8s1.7-.3,2.4-.8c.7-.5,1.3-1.3,1.7-2.2.4-.9.6-1.9.6-3Z"
+                    ></path>
+                    <path
+                        d="M70.4,249.2v4.9c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.2h-9.6v-1.2c.9,0,1.6-.2,2-.4.4-.2.7-.6.9-1.2.1-.6.2-1.5.2-2.7v-4.9c0-2.9,0-4.7-.2-5.3-.1-.7-.4-1.1-.8-1.3-.4-.2-1.1-.3-2.2-.3v-1.2l5.8-1.4.4,3.6h.1c.9-1.1,2-2,3.3-2.7,1.3-.6,2.6-1,4-1s2.1.2,3.1.5c.9.4,1.6.9,2.1,1.5.4.6.7,1.3.9,2.2.2.9.3,2.1.3,3.7v6.1c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.2h-9.5v-1.2c.9,0,1.6-.2,2-.4.4-.2.7-.6.8-1.2.1-.6.2-1.5.2-2.7v-4.8c0-2.8-.3-4.7-1-5.8-.6-1.1-1.7-1.7-3.2-1.7s-2.1.3-3,.9c-.9.6-1.6,1.4-2.2,2.4-.2.3-.3.6-.4.9,0,.3-.2.7-.2,1.1,0,.5,0,1.1,0,1.8Z"
+                    ></path>
+                    <path
+                        d="M87.9,269.4c-1.6,0-2.8-.3-3.8-1-1-.6-1.5-1.5-1.5-2.4s.6-1.7,1.9-1.7.8.1,1,.3c.2.2.5.7.9,1.4.3.7.7,1.2,1,1.5.3.2.7.4,1.4.4,1.2,0,2-.4,2.4-1.2.5-.8.7-2.2.7-4.2v-12.7c0-1.4,0-2.6,0-3.5,0-.9-.1-1.5-.2-1.9,0-.6-.4-.9-.8-1.2-.5-.2-1.3-.3-2.5-.3v-1.3l7.2-1.4v19.8c0,3-.6,5.3-1.9,7-1.3,1.6-3.1,2.4-5.6,2.4ZM91.3,232.7c0-.6.2-1.2.7-1.6.4-.4,1-.7,1.6-.7s1.2.2,1.6.7c.4.4.7,1,.7,1.6s-.2,1.2-.7,1.6c-.4.4-1,.7-1.6.7s-1.2-.2-1.6-.7c-.4-.4-.7-1-.7-1.6Z"
+                    ></path>
+                    <path
+                        d="M106.3,249.8l5.3-2.3v-1.5c0-1.5-.3-2.7-.9-3.4-.6-.7-1.6-1.1-2.9-1.1s-1.3.2-1.7.5c-.4.3-.7,1-1,1.9-.3.7-.5,1.1-.8,1.4-.3.2-.6.4-1.1.4-1.2,0-1.8-.6-1.8-1.8s.6-2.1,1.9-2.7c1.2-.6,3-1,5.3-1s4.2.4,5.2,1.3c1,.9,1.5,2.3,1.5,4.4v8.2c0,1.5.1,2.6.4,3.2.3.6.8,1,1.4,1s.5,0,.9-.2c.3-.1.6-.3.7-.6l.5.9c-.3.6-.8,1-1.6,1.4-.8.4-1.6.6-2.4.6s-1.8-.3-2.4-1c-.5-.7-.8-1.6-.8-2.9h-.2c-.7,1.2-1.5,2.1-2.7,2.8-1.1.7-2.4,1-3.7,1s-2.7-.4-3.6-1.2c-.9-.8-1.3-1.8-1.3-3.2s.4-2.2,1.3-3.2c.9-1,2.4-1.9,4.6-2.9ZM111.5,251.9v-2.9c-2.8,1-4.8,2.1-5.8,3.1-1.1,1-1.6,2-1.6,3.1s.3,1.5.8,2c.5.5,1.2.8,2,.8s1.7-.3,2.4-.8c.7-.5,1.3-1.3,1.7-2.2.4-.9.6-1.9.6-3Z"
+                    ></path>
+                    <path
+                        d="M157.3,254.1c0,1.2,0,2.2.3,2.8s.6,1,1.1,1.2c.6.2,1.4.3,2.6.4v1.4h-11.8v-1.4c1.1,0,2-.2,2.6-.4.6-.2,1-.6,1.2-1.2.2-.6.3-1.4.3-2.6v-7.9h-14.8v7.7c0,1.2,0,2.2.3,2.8.2.6.6,1,1.1,1.2.6.2,1.4.3,2.6.4v1.4h-11.8v-1.4c1.1,0,2-.2,2.6-.4.6-.2,1-.6,1.2-1.2.2-.6.3-1.4.3-2.6v-17c0-1.1,0-2-.3-2.6-.2-.6-.5-1-1-1.2-.5-.2-1.3-.4-2.4-.4v-1.4h11.1v1.4c-1,0-1.8.2-2.3.4-.5.2-.9.7-1,1.3-.2.6-.3,1.5-.3,2.8v7h14.8v-7.3c0-1.1,0-2-.3-2.6-.2-.6-.5-1-1-1.2-.5-.2-1.3-.4-2.4-.4v-1.4h11.1v1.4c-1,0-1.8.2-2.3.4-.5.2-.9.7-1,1.3-.2.6-.3,1.5-.3,2.8v16.5Z"
+                    ></path>
+                    <path
+                        d="M179.1,249.9v-3.6c0-1.3,0-2.3-.2-2.9-.1-.6-.4-1-.8-1.2-.4-.2-1.1-.3-2.1-.4v-1.3h6.6v11.2c0,2.7,0,4.5.2,5.4.1.6.4,1,.7,1.2.4.2,1.1.3,2.2.3v1.3l-6,.4-.4-4.4h-.1c-.9,1.5-2,2.6-3.2,3.3s-2.5,1.1-3.8,1.1-2-.2-3-.6c-1-.4-1.7-.9-2.2-1.6-.8-1-1.2-3-1.2-5.9v-5.8c0-1.3,0-2.3-.2-2.9-.1-.6-.4-1-.8-1.2-.4-.2-1.1-.3-2.1-.4v-1.3h6.6v10c0,2.6.3,4.6,1,5.8.6,1.2,1.6,1.8,3,1.8,2.1,0,3.8-1.4,5-4.2.2-.6.4-1.1.5-1.6,0-.5.1-1.3.1-2.3Z"
+                    ></path>
+                    <path
+                        d="M194.8,249.4v4.6c0,1.3,0,2.3.2,3,.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.3h-9.7v-1.3c1,0,1.6-.2,2.1-.4s.7-.6.9-1.2c.1-.6.2-1.5.2-2.7v-4.7c0-1.4,0-2.6,0-3.5,0-.9-.1-1.6-.2-1.9-.1-.6-.4-1-.7-1.2-.4-.2-1.1-.3-2.2-.3v-1.3l6-1.4.5,3.7h.2c1.1-1.2,2.2-2.2,3.5-2.8,1.2-.6,2.5-.9,4-.9s2.8.3,3.9,1c1.1.6,1.8,1.5,2.2,2.7h.1c.9-1.1,2-2,3.3-2.7,1.3-.6,2.7-1,4.1-1s2.2.2,3.1.6c.9.4,1.7.9,2.1,1.6.4.6.7,1.3.9,2.2s.3,2.2.3,3.7v5.8c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.3h-9.7v-1.3c.9,0,1.6-.2,2-.4.4-.2.7-.6.9-1.2.1-.6.2-1.5.2-2.7v-4.6c0-2.8-.3-4.8-1-5.9-.6-1.1-1.7-1.7-3.3-1.7s-2,.3-3,.9c-1,.6-1.7,1.4-2.2,2.4-.2.3-.3.6-.4,1,0,.3-.1.7-.2,1.2,0,.5,0,1.1,0,1.8v4.6c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2.1.4v1.3h-9.7v-1.3c.9,0,1.6-.2,2-.4s.7-.6.8-1.2c.1-.6.2-1.5.2-2.7v-4.6c0-1.9-.1-3.4-.4-4.5-.3-1.1-.7-1.9-1.3-2.4-.6-.5-1.4-.7-2.5-.7s-2.1.3-3.1.9c-1,.6-1.7,1.4-2.2,2.4-.2.3-.3.6-.4,1,0,.3-.1.7-.2,1.2,0,.5,0,1.1,0,1.8Z"
+                    ></path>
+                    <path
+                        d="M234,249.4v4.6c0,1.3,0,2.3.2,3,.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.3h-9.7v-1.3c1,0,1.6-.2,2.1-.4s.7-.6.9-1.2c.1-.6.2-1.5.2-2.7v-4.7c0-1.4,0-2.6,0-3.5,0-.9-.1-1.6-.2-1.9-.1-.6-.4-1-.7-1.2-.4-.2-1.1-.3-2.2-.3v-1.3l6-1.4.5,3.7h.2c1.1-1.2,2.2-2.2,3.5-2.8,1.2-.6,2.5-.9,4-.9s2.8.3,3.9,1c1.1.6,1.8,1.5,2.2,2.7h.1c.9-1.1,2-2,3.3-2.7,1.3-.6,2.7-1,4.1-1s2.2.2,3.1.6c.9.4,1.7.9,2.1,1.6.4.6.7,1.3.9,2.2s.3,2.2.3,3.7v5.8c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2,.4v1.3h-9.7v-1.3c.9,0,1.6-.2,2-.4.4-.2.7-.6.9-1.2.1-.6.2-1.5.2-2.7v-4.6c0-2.8-.3-4.8-1-5.9-.6-1.1-1.7-1.7-3.3-1.7s-2,.3-3,.9c-1,.6-1.7,1.4-2.2,2.4-.2.3-.3.6-.4,1,0,.3-.1.7-.2,1.2,0,.5,0,1.1,0,1.8v4.6c0,1.3,0,2.3.2,2.9.1.6.4,1,.8,1.2.4.2,1.1.3,2.1.4v1.3h-9.7v-1.3c.9,0,1.6-.2,2-.4s.7-.6.8-1.2c.1-.6.2-1.5.2-2.7v-4.6c0-1.9-.1-3.4-.4-4.5-.3-1.1-.7-1.9-1.3-2.4-.6-.5-1.4-.7-2.5-.7s-2.1.3-3.1.9c-1,.6-1.7,1.4-2.2,2.4-.2.3-.3.6-.4,1,0,.3-.1.7-.2,1.2,0,.5,0,1.1,0,1.8Z"
+                    ></path>
+                    <path
+                        d="M283.1,255.5l1.1,1c-2.1,2.5-4.6,3.8-7.7,3.8s-3.6-.4-5-1.2c-1.4-.8-2.6-2-3.4-3.5-.8-1.5-1.2-3.2-1.2-5.1s.4-3.8,1.3-5.3c.9-1.5,2-2.8,3.5-3.6,1.5-.9,3.2-1.3,5.2-1.3s4.2.6,5.5,1.9c1.3,1.3,2,3.1,2,5.5s0,.5-.2.6c-.1,0-.4.1-.9.1h-12c0,.2,0,.4-.1.7,0,.3,0,.6,0,.9,0,1.7.3,3.2.8,4.4.5,1.3,1.3,2.2,2.3,2.9,1,.7,2.1,1,3.4,1s1.9-.2,2.9-.7c.9-.5,1.8-1.2,2.7-2.2ZM271.5,246.6h6.7c1,0,1.6,0,1.8-.2.2-.1.3-.4.3-.8,0-1.1-.4-2-1.1-2.7-.7-.7-1.7-1-2.9-1-2.6,0-4.3,1.6-4.9,4.7Z"
+                    ></path>
+                    <path
+                        d="M293.7,229.5v24.6c0,1.2,0,2.1.2,2.8.1.6.5,1,.9,1.3.5.2,1.2.4,2.1.4v1.3h-10.1v-1.3c1,0,1.7-.2,2.2-.4.5-.2.8-.6,1-1.2.2-.6.3-1.4.3-2.6v-15.8c0-1.3,0-2.4,0-3.3,0-.9,0-1.5-.2-1.8-.1-.6-.4-.9-.9-1.1-.5-.2-1.3-.3-2.4-.3v-1.2l6.9-1.4Z"
+                    ></path>
+                    <rect
+                        x="71.6"
+                        y="219"
+                        width="156.9"
+                        height="3.1"
+                    ></rect>
+                    <path
+                        d="M300,32.6v-1.8h-65.6v1.8c8,0,12.3,4.4,12.3,12.4v67.2h-39.2v-21.9l-36.3,103.2h48.5v-1.8c-9.4,0-12.3-5.9-12.3-12.4v-65.3h39.2v65.3c0,6.5-2.8,12.4-12.3,12.4v1.8h65.6v-1.8c-9.4,0-12.3-5.9-12.3-12.4V45c0-8,4.3-12.4,12.3-12.4Z"
+                    ></path>
+                    <path
+                        d="M205.3,41c2.7-6.6,4.9-8.6,12-8.6v-1.8H63.9v1.8c11.7,0,12.8,5.6,15.7,14.5l8.1,25-21.8,62.8-1.1,3.3-8.5,24.4h-.7L17.7,47.2c-3-9.1-3.1-13.7,4.7-14.6.9,0,1.9-.1,3-.1v-1.8H0v1.8c11.7,0,12.8,5.6,15.7,14.5l47.7,146.6h24.4l20.5-58.4,9.3,28.7,9.7,29.7h24.4l14.6-41.5,36.7-104.4c.9-2.5,1.7-4.9,2.3-6.5h0ZM97.6,42.8c-.2.9-.5,2-.9,3.1l-8,23.1-7.2-21.8c-2.9-9.1-3.1-13.7,4.7-14.6.7,0,1.4-.1,2.2-.1,6,.1,9.2,2.6,9.6,6.7,0,.8,0,2-.4,3.6h0ZM160.7,45.9l-30.9,88.9-1.1,3.2-8.5,24.3h-.7l-.6-1.9-9.4-28.5,29.7-84.4c.9-2.5,1.7-4.9,2.3-6.5,2.6-6.4,4.7-8.3,11-8.6.6,0,1.1,0,1.6.1,4.7.6,7.3,2.7,7.8,6.1,0,.2,0,.3,0,.5,0,1.4-.1,3.6-1.2,6.7h0Z"
+                    ></path>
+                </svg>
+            </a>
+        </div>
+        <div
+            class="col-start-2 hidden h-full items-center justify-center lg:flex">
+            <a
+                data-company-name
+                class="group pb-4"
+                href={translatePath(currentLocale ?? defaultLocale, "/")}>
+                <div
+                    class="h-1 w-20 rounded-full bg-slate-200 transition-colors duration-500 group-hover:bg-slate-600">
+                </div>
+            </a>
+        </div>
+        <div class="z-40 col-span-1 col-start-3 row-span-1 justify-self-end">
+            <div
+                class="relative flex h-16 items-center justify-center lg:h-24 lg:w-24">
+                <div class="menu-icon">
+                    <input
+                        id="menu-toggle"
+                        class="menu-icon__checkbox"
+                        type="checkbox"
+                    />
+                    <div>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav
+        id="navigation"
+        class="fixed bottom-0 left-0 right-0 top-0 z-30 flex h-screen items-center justify-center text-sm font-medium">
+        <div
+            id="navigation-background"
+            class="absolute left-0 top-0 h-full w-full bg-white opacity-0">
+        </div>
+        <div
+            class="z-20 flex w-full flex-col flex-wrap items-center justify-center overflow-hidden font-semibold">
+            <div class="flex flex-col items-start pt-10 md:items-center">
+                {
+                    header.pages.map((page, index) => (
+                        <a
+                            data-nav-item
+                            href={translatePath(
+                                currentLocale ?? defaultLocale,
+                                page.link
+                            )}
+                            class="relative flex items-center justify-start gap-4 overflow-hidden pr-10">
+                            <div
+                                data-nav-border-reveal
+                                data-nav-text-reveal
+                                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-solid border-black pt-1 text-black">
+                                0{index + 1}
+                            </div>
+                            <div
+                                data-nav-text-reveal
+                                class="xs:text-5xl cursor-pointer overflow-hidden text-4xl !leading-[1.15] text-black md:text-[5.63rem]">
+                                {page.title}
+                            </div>
+                        </a>
+                    ))
+                }
+                <div class="flex gap-8 pl-16 pt-10 md:pl-0">
+                    {
+                        locales.map((locale) => (
+                            <a
+                                href={getTranslatedUrl(locale)}
+                                class:list={[
+                                    "relative flex cursor-pointer items-center justify-start gap-4 overflow-hidden",
+                                    isActiveLocale(locale) && "active-locale",
+                                ]}>
+                                <span
+                                    data-nav-text-reveal
+                                    class="text-md xs:text-lg overflow-hidden !leading-[1.15] text-black md:text-xl">
+                                    <span>{locale}</span>
+                                </span>
+                            </a>
+                        ))
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    // Uncomment if you have premium version of gsap
+    // import { SplitText } from "gsap/SplitText";
+    // import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+    import { BlurPlugin } from "@/utils/gsap-blur";
+    import { LifecycleManager } from "@/utils/lifecycle-manager";
+
+    gsap.registerPlugin(
+        ScrollTrigger,
+        /*SplitText, DrawSVGPlugin,*/
+        BlurPlugin
+    );
+
+    const lm = new LifecycleManager();
+
+    lm.onElementLoaded("navigation", (ctx) => {
+        ctx?.add(() => {
+            gsap.timeline({
+                defaults: {
+                    ease: "power1.inOut",
+                    stagger: 0.2,
+                },
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "50px",
+                    toggleActions: "play none none reverse",
+                },
+            })
+                .to("[data-company-name]", { opacity: 0 })
+                // .to("header .logo-path-mask", { drawSVG: 0 }, "<")
+                .to("header .logo-path-mask", { opacity: 0 }, "<")
+                .set("#header-logo", { pointerEvents: "none" });
+
+            const tl = gsap.timeline({
+                paused: true,
+                defaults: {
+                    duration: 1,
+                    ease: "power3.out",
+                },
+            });
+
+            // const childSplit = new SplitText("[data-nav-text-reveal]", {
+            // 	type: "lines",
+            // 	linesClass: "split-child",
+            // });
+            // const parentSplit = new SplitText("[data-nav-text-reveal]", {
+            // 	// type: "lines",
+            // 	linesClass: "split-parent",
+            // });
+
+            tl.set("#navigation", { pointerEvents: "auto" })
+                .to("#navigation-background", { opacity: 1 }, "<")
+                .to(
+                    "[data-nav-text-reveal]",
+                    { opacity: 1, duration: 0.5, ease: "none" },
+                    "<=0.5"
+                );
+            // .from(
+            // 	childSplit.lines,
+            // 	{
+            // 		duration: 1,
+            // 		yPercent: 300,
+            // 		skewY: 7,
+            // 		stagger: 0.02,
+            // 	},
+            // 	"<",
+            // );
+
+            const menuItems = gsap.utils.toArray(
+                "[data-nav-item]"
+            ) as HTMLElement[];
+
+            menuItems.forEach((menuItem) => {
+                const menuItemTl = gsap
+                    .timeline({
+                        defaults: { duration: 0.4, ease: "none" },
+                        paused: true,
+                    })
+                    .to(menuItem, {
+                        blur: 2,
+                    })
+                    .to(menuItem, {
+                        blur: 1,
+                    });
+                menuItem.addEventListener("mouseenter", (e) =>
+                    menuItemTl.play()
+                );
+                menuItem.addEventListener("mouseleave", (e) =>
+                    menuItemTl.pause(0)
+                );
+            });
+
+            // Get the checkbox
+            const menuToggle = document.getElementById("menu-toggle");
+
+            // Add an event listener to the checkbox
+            menuToggle?.addEventListener("change", function () {
+                if ((this as HTMLInputElement).checked) {
+                    tl.play();
+                } else {
+                    tl.reverse();
+                }
+            });
+        });
+    });
+</script>

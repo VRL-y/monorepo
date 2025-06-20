@@ -1,0 +1,35 @@
+---
+import Container from "@/components/primitives/Container.astro";
+import Link from "@/components/primitives/Link.astro";
+import Title from "@/components/primitives/Title.astro";
+---
+
+<Container
+    tag="section"
+    class="pb-40 pt-52 md:pb-48 md:pt-64">
+    <div class="mx-auto flex max-w-xl flex-col gap-12 text-center">
+        <div class="flex flex-col gap-4">
+            <Title
+                level={4}
+                tag={2}
+                >404</Title
+            >
+            <Title
+                level={3}
+                tag={1}
+                >Whoops! The page you are looking for was not found.</Title
+            >
+        </div>
+        <div class="flex flex-col gap-2">
+            <p class="text-gray-500 dark:text-gray-400">
+                Here are some pages you might want to visit:
+            </p>
+            <ul
+                class="flex flex-wrap items-center justify-center gap-x-4 text-gray-500 dark:text-gray-400">
+                <li>
+                    <Link href="/">Home</Link>
+                </li>
+            </ul>
+        </div>
+    </div>
+</Container>

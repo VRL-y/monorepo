@@ -1,0 +1,138 @@
+---
+import type { ButtonProps } from "@/components/primitives/Button.astro";
+import Container from "@/components/primitives/Container.astro";
+import Link from "@/components/primitives/Link.astro";
+import Blob from "@/components/sections/Blob.astro";
+
+interface Props {
+    title: string;
+    subtitle: string;
+    buttons?: ButtonProps[];
+}
+
+const defaultButtons: ButtonProps[] = [
+    {
+        title: "Contact",
+        href: "/contact",
+        style: "button",
+        icon: "iconamoon:arrow-top-right-1-thin",
+    },
+];
+
+const { title, subtitle, buttons = defaultButtons } = Astro.props;
+---
+
+<div
+    id="hero"
+    class="relative flex min-h-[100svh] items-center justify-center pb-48 pt-32 text-sm font-medium lg:px-20 lg:pt-44">
+    <Container>
+        <div class="m-auto w-full flex-col items-center">
+            <div
+                class="grid auto-cols-fr grid-cols-1 grid-rows-[auto] items-center gap-[3.13rem] lg:grid-cols-2">
+                <div
+                    class="row-start-1 flex flex-col items-start justify-start gap-2">
+                    <h1
+                        data-hero-reveal
+                        class="mx-0 my-3 text-4xl leading-tight md:text-7xl"
+                        set:html={title}
+                    />
+                    <div class="lg:mt-20">
+                        <div>
+                            <p
+                                data-hero-reveal
+                                class="mb-3 text-3xl font-semibold"
+                                set:html={subtitle}
+                            />
+                            <div class="mt-10 text-white">
+                                {
+                                    buttons.map(
+                                        ({ title, href, style, icon }) => (
+                                            <Link
+                                                data-hero-reveal
+                                                href={href}
+                                                style={
+                                                    style as
+                                                        | "primary"
+                                                        | "button"
+                                                        | "outline"
+                                                        | "buttonLight"
+                                                }
+                                                icon={icon}>
+                                                {title}
+                                            </Link>
+                                        )
+                                    )
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 row-span-1 justify-self-center">
+                    <Blob class="xl:pl-32" />
+                </div>
+            </div>
+        </div>
+        <div
+            class="absolute bottom-[3.13rem] left-0 right-0 z-10 m-auto flex max-w-[80%] items-center justify-center overflow-hidden text-blue-700">
+            <div class="flex items-center">
+                <button
+                    id="scroll-down-button"
+                    class="scroll-down-button m-auto flex h-7 w-5 max-w-full items-start justify-center rounded-xl border-2 border-solid border-black underline"
+                    ><div class="mt-1.5 h-1 w-0.5 cursor-pointer bg-black">
+                    </div>
+                </button>
+            </div>
+        </div>
+    </Container>
+</div>
+
+<style>
+    @keyframes moveDown {
+        0% {
+            transform: translateY(0);
+        }
+        80% {
+            transform: translateY(2px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    .scroll-down-button:hover div {
+        animation: moveDown 0.7s infinite;
+    }
+    [data-hero-reveal] {
+        opacity: 0;
+        filter: blur(3px);
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+    import { BlurPlugin } from "@/utils/gsap-blur";
+    import { LifecycleManager } from "@/utils/lifecycle-manager";
+
+    gsap.registerPlugin(ScrollToPlugin, BlurPlugin);
+
+    const lm = new LifecycleManager();
+
+    function scrollDown() {
+        gsap.to(window, { duration: 0.5, scrollTo: "#services" });
+    }
+
+    lm.onElementLoaded("hero", (ctx) => {
+        ctx?.add(() => {
+            const scrollDownButton =
+                document.getElementById("scroll-down-button");
+            scrollDownButton?.addEventListener("click", scrollDown);
+
+            gsap.to("[data-hero-reveal]", {
+                blur: 0,
+                duration: 1,
+                opacity: 1,
+            });
+        });
+    });
+</script>

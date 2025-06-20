@@ -1,0 +1,98 @@
+---
+import Button from "@/components/primitives/Button.astro";
+
+type HTMLInputTypeAttribute =
+	| "button"
+	| "checkbox"
+	| "color"
+	| "date"
+	| "datetime-local"
+	| "email"
+	| "file"
+	| "hidden"
+	| "image"
+	| "month"
+	| "number"
+	| "password"
+	| "radio"
+	| "range"
+	| "reset"
+	| "search"
+	| "submit"
+	| "tel"
+	| "text"
+	| "time"
+	| "url"
+	| "week";
+
+type FormFieldType = HTMLInputTypeAttribute | "textarea" | "submit";
+
+interface FormField {
+	title: string;
+	placeholder?: string;
+	type: FormFieldType;
+	required?: boolean;
+	width?: 1 | 2;
+}
+
+interface Props {
+	title: string;
+	fields: FormField[];
+}
+
+const { title, fields } = Astro.props;
+---
+
+<div
+	class="items-center gap-x-[6.25rem] pb-40 auto-cols-fr justify-center flex"
+>
+	<div class="col-span-1 row-span-1 w-full max-w-3xl">
+		<h2 class="text-[2.13rem] leading-9 font-semibold mb-1">
+			{title}
+		</h2>
+		<div class="mt-8">
+			<div class="mt-0 mx-0 mb-3.5">
+				<form data-static-form-name="contact" class="items-center auto-cols-fr grid-cols-1 sm:grid-cols-2 grid-rows-[auto] grid gap-8">
+					{
+						fields?.map((field) => {
+							if (field.type === "submit") {
+								return (
+									<Button type="submit" class:list={[field.width == 2 && "sm:col-span-2"]}>
+										{field.title}
+									</Button>
+								);
+							} else if (field.type === "textarea") {
+								return (
+									<div class:list={["text-base", field.width == 2 && "sm:col-span-2"]}>
+										<p class="text-black font-semibold max-w-full mb-3">
+											{field.title}
+										</p>
+										<textarea
+											required={field.required}
+											placeholder={field.placeholder}
+											class="text-zinc-800 cursor-text py-4 w-full border-2 border-black border-solid rounded-md m-0",
+										/>
+									</div>
+								);
+							} else {
+								return (
+									<div class:list={["text-base", field.width == 2 && "sm:col-span-2"]}>
+										<p class="text-black font-semibold max-w-full mb-3">
+											{field.title}
+										</p>
+										<input
+											type={field.type as HTMLInputTypeAttribute}
+											required={field.required}
+											placeholder={field.placeholder}
+											class="text-zinc-800 cursor-text py-4 w-full h-14 min-h-[3.50rem] border-2 border-black border-solid rounded-md m-0"
+										/>
+									</div>
+								);
+							}
+						})
+					}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

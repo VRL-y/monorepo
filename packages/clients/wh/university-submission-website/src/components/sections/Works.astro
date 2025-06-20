@@ -1,0 +1,30 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import type { ButtonProps } from "@/components/primitives/Button.astro";
+import Link from "@/components/primitives/Link.astro";
+import WorkPreview from "@/components/sections/WorkPreview.astro";
+
+const currentLocale = Astro.currentLocale;
+
+const works = await getCollection("works");
+
+const allWorks = works
+  .map((work) => {
+    const [lang, ...slug] = work.slug.split("/");
+    return {
+      ...work,
+      lang: lang,
+      slug: work.slug.startsWith("/") ? work.slug : `/${work.slug}`,
+    };
+  })
+  .filter((page) => page.lang === currentLocale)
+  .sort(
+    (a, b) => a.data.lastUpdateDate.getTime() - b.data.lastUpdateDate.getTime(),
+  ) as CollectionEntry<"works">[];
+---
+
+<div
+  class="grid auto-cols-fr grid-cols-1 grid-rows-[auto] gap-9 pb-40 text-sm font-medium md:grid-cols-2"
+>
+  {allWorks.map((work) => <WorkPreview {work} />)}
+</div>

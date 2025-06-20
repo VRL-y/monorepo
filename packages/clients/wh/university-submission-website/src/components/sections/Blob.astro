@@ -1,0 +1,513 @@
+---
+import promoVideo from "@/assets/pages/homepage/promo.webm";
+// https://codepen.io/zank/pen/zYQqygJ
+// https://whatamesh.vercel.app/
+import { Icon } from "astro-icon/components";
+
+const { class: className } = Astro.props;
+---
+
+<div class="relative">
+    <canvas
+        id="blob"
+        class:list={["touch:pointer-events-none", className]}
+    ></canvas>
+    <video
+        id="video-blob"
+        autoplay
+        loop
+        muted
+        controls>
+        <source src={promoVideo} />
+        Your browser does not support the video tag.
+    </video>
+    <div
+        id="blob-cursor-follower"
+        class="follower">
+        <Icon
+            name="mdi:play-circle"
+            size={100}
+        />
+    </div>
+    <slot />
+</div>
+
+<style>
+    canvas {
+        touch-action: none;
+        cursor: pointer;
+    }
+    video {
+        display: none;
+    }
+    video:fullscreen {
+        display: block;
+    }
+    .follower {
+        pointer-events: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+        position: absolute;
+    }
+    .follower > svg {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        color: rgba(255, 255, 255, 0.5);
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { LifecycleManager } from "@/utils/lifecycle-manager";
+
+    let canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D;
+    let render: () => void;
+    let init: () => void;
+    let blob: Blob;
+    let video: HTMLVideoElement;
+    let follower: HTMLDivElement;
+
+    class Blob {
+        points: Point[];
+        ctx: CanvasRenderingContext2D | null = null;
+
+        private _color: string | null = null;
+        private _canvas: HTMLCanvasElement | null = null;
+        private _points: number = 0;
+        private _radius: number = 0;
+        private _position: { x: number; y: number } = { x: 0.5, y: 0.5 };
+        private _running: boolean = true;
+
+        constructor() {
+            this.points = [];
+        }
+
+        init() {
+            for (let i = 0; i < this.numPoints; i++) {
+                let point = new Point(this.divisional * (i + 1), this);
+                this.push(point);
+            }
+        }
+
+        render() {
+            if (!this.canvas || !this.ctx || !video) return;
+
+            let canvas = this.canvas as HTMLCanvasElement;
+            let ctx = this.ctx;
+            let position = this.position;
+            let pointsArray = this.points;
+            let radius = this.radius;
+            let points = this.numPoints;
+            let divisional = this.divisional;
+            let center = this.center;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            pointsArray[0].solveWith(pointsArray[points - 1], pointsArray[1]);
+
+            let p0 = pointsArray[points - 1].position;
+            let p1 = pointsArray[0].position;
+            let _p2 = p1;
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.moveTo((p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
+
+            for (let i = 1; i < points; i++) {
+                pointsArray[i].solveWith(
+                    pointsArray[i - 1],
+                    pointsArray[i + 1] || pointsArray[0]
+                );
+
+                let p2 = pointsArray[i].position;
+                let xc = (p1.x + p2.x) / 2;
+                let yc = (p1.y + p2.y) / 2;
+                ctx.quadraticCurveTo(p1.x, p1.y, xc, yc);
+
+                p1 = p2;
+            }
+
+            let xc = (p1.x + _p2.x) / 2;
+            let yc = (p1.y + _p2.y) / 2;
+            ctx.quadraticCurveTo(p1.x, p1.y, xc, yc);
+
+            ctx.fillStyle = "#000000";
+            ctx.globalCompositeOperation = "destination-in";
+            ctx.fill();
+            ctx.strokeStyle = "#000000";
+            ctx.globalCompositeOperation = "source-over";
+
+            requestAnimationFrame(this.render.bind(this));
+        }
+
+        push(item: Point) {
+            if (item instanceof Point) {
+                this.points.push(item);
+            }
+        }
+
+        set color(value: string | null) {
+            this._color = value;
+        }
+        get color() {
+            return this._color || "#000000";
+        }
+
+        set canvas(value: HTMLElement) {
+            if (value instanceof HTMLCanvasElement) {
+                this._canvas = value;
+                this.ctx = this._canvas.getContext(
+                    "2d"
+                ) as CanvasRenderingContext2D;
+            }
+        }
+        get canvas() {
+            return this._canvas as HTMLCanvasElement;
+        }
+
+        set numPoints(value: number) {
+            if (value > 2) {
+                this._points = value;
+            }
+        }
+        get numPoints() {
+            return this._points || 32;
+        }
+
+        set radius(value: number) {
+            if (value > 0) {
+                this._radius = value;
+            }
+        }
+        get radius() {
+            return (
+                this._radius ||
+                Math.min(
+                    (this.canvas as HTMLCanvasElement)?.width || 0,
+                    (this.canvas as HTMLCanvasElement)?.height || 0
+                ) / 2.1
+            );
+        }
+
+        set position(value: { x: number; y: number }) {
+            if (
+                typeof value == "object" &&
+                value.x !== undefined &&
+                value.y !== undefined
+            ) {
+                this._position = value;
+            }
+        }
+        get position() {
+            return this._position;
+        }
+
+        get divisional() {
+            return (Math.PI * 2) / this.numPoints;
+        }
+
+        get center() {
+            return {
+                x:
+                    ((this.canvas as HTMLCanvasElement)?.width || 0) *
+                    this.position.x,
+                y:
+                    ((this.canvas as HTMLCanvasElement)?.height || 0) *
+                    this.position.y,
+            };
+        }
+
+        set running(value: boolean) {
+            this._running = value === true;
+        }
+        get running() {
+            return this._running;
+        }
+    }
+
+    class Point {
+        parent: Blob;
+        azimuth: number;
+
+        private _components: { x: number; y: number };
+        private _acceleration: number = 0;
+        private _speed: number = 0;
+        private _radialEffect: number = 0;
+        private _elasticity: number = 0.001;
+        private _friction: number = 0.0085;
+
+        constructor(azimuth: number, parent: Blob) {
+            this.parent = parent;
+            this.azimuth = Math.PI - azimuth;
+            this._components = {
+                x: Math.cos(this.azimuth),
+                y: Math.sin(this.azimuth),
+            };
+
+            this.acceleration = -0.08 + Math.random() * 0.05;
+        }
+
+        solveWith(leftPoint: Point, rightPoint: Point) {
+            this.acceleration =
+                (-0.3 * this.radialEffect +
+                    (leftPoint.radialEffect - this.radialEffect) +
+                    (rightPoint.radialEffect - this.radialEffect)) *
+                    this.elasticity -
+                this.speed * this.friction;
+        }
+
+        set acceleration(value: number) {
+            if (typeof value == "number") {
+                this._acceleration = value;
+                this.speed += this._acceleration * 2;
+            }
+        }
+        get acceleration() {
+            return this._acceleration || 0;
+        }
+
+        set speed(value: number) {
+            if (typeof value == "number") {
+                this._speed = value;
+                this.radialEffect += this._speed * 5;
+            }
+        }
+        get speed() {
+            return this._speed || 0;
+        }
+
+        set radialEffect(value: number) {
+            if (typeof value == "number") {
+                this._radialEffect = value;
+            }
+        }
+        get radialEffect() {
+            return this._radialEffect || 0;
+        }
+
+        get position() {
+            return {
+                x:
+                    this.parent.center.x +
+                    this.components.x *
+                        (this.parent.radius + this.radialEffect),
+                y:
+                    this.parent.center.y +
+                    this.components.y *
+                        (this.parent.radius + this.radialEffect),
+            };
+        }
+
+        get components() {
+            return this._components;
+        }
+
+        set elasticity(value: number) {
+            if (typeof value === "number") {
+                this._elasticity = value;
+            }
+        }
+        get elasticity() {
+            return this._elasticity || 0.001;
+        }
+        set friction(value: number) {
+            if (typeof value === "number") {
+                this._friction = value;
+            }
+        }
+        get friction() {
+            return this._friction || 0.0085;
+        }
+    }
+
+    blob = new Blob();
+
+    let isMouseMoveListenerAdded = false;
+    let oldMousePoint = { x: 0, y: 0 };
+    let hover = false;
+
+    function openFullscreen(element: HTMLElement) {
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+
+    let mouseMove = function (e: PointerEvent) {
+        let pos = blob.center;
+        let canvasRect = canvas.getBoundingClientRect(); // Get the position of the canvas
+        let adjustedX = e.clientX - canvasRect.left; // Adjust the X coordinate
+        let adjustedY = e.clientY - canvasRect.top; // Adjust the Y coordinate
+        let diff = { x: adjustedX - pos.x, y: adjustedY - pos.y };
+        let dist = Math.sqrt(diff.x * diff.x + diff.y * diff.y);
+        let angle: number | null = null;
+
+        interface BlobWithMouse extends Blob {
+            mousePos?: { x: number; y: number };
+        }
+
+        (blob as BlobWithMouse).mousePos = {
+            x: pos.x - adjustedX,
+            y: pos.y - adjustedY,
+        };
+
+        if (dist < blob.radius && hover === false) {
+            let vector = { x: adjustedX - pos.x, y: adjustedY - pos.y };
+            angle = Math.atan2(vector.y, vector.x);
+            hover = true;
+        } else if (dist > blob.radius && hover === true) {
+            let vector = { x: adjustedX - pos.x, y: adjustedY - pos.y };
+            angle = Math.atan2(vector.y, vector.x);
+            hover = false;
+            blob.color = null;
+        }
+
+        if (typeof angle == "number") {
+            let nearestPoint: Point | null = null;
+            let distanceFromPoint = 100;
+
+            blob.points.forEach((point) => {
+                if (Math.abs(angle! - point.azimuth) < distanceFromPoint) {
+                    nearestPoint = point;
+                    distanceFromPoint = Math.abs(angle! - point.azimuth);
+                }
+            });
+            if (nearestPoint) {
+                let strength = {
+                    x: oldMousePoint.x - adjustedX,
+                    y: oldMousePoint.y - adjustedY,
+                };
+                let strengthValue =
+                    Math.sqrt(
+                        strength.x * strength.x + strength.y * strength.y
+                    ) * 10;
+                if (strengthValue > 15) strengthValue = 15;
+                nearestPoint.acceleration =
+                    (strengthValue / 100) * (hover ? -1 : 1);
+            }
+        }
+
+        oldMousePoint.x = adjustedX;
+        oldMousePoint.y = adjustedY;
+    };
+
+    let resize = function () {
+        canvas = document.getElementById("blob") as HTMLCanvasElement;
+        if (!canvas) return;
+
+        let width = 550;
+
+        if (window.innerWidth < 640) {
+            width = 400;
+        } else if (window.innerWidth < 400) {
+            width = 300;
+        }
+
+        canvas.width = width;
+        canvas.height = width;
+    };
+
+    init = function () {
+        canvas = document.getElementById("blob") as HTMLCanvasElement;
+        video = document.getElementById("video-blob") as HTMLVideoElement;
+        follower = document.getElementById(
+            "blob-cursor-follower"
+        ) as HTMLDivElement;
+
+        if (!canvas || !video) return;
+
+        canvas.setAttribute("touch-action", "none");
+
+        window.removeEventListener("resize", resize);
+        window.addEventListener("resize", resize);
+        resize();
+
+        if (!isMouseMoveListenerAdded) {
+            window.removeEventListener("pointermove", mouseMove);
+            window.addEventListener("pointermove", mouseMove);
+            isMouseMoveListenerAdded = true;
+        }
+
+        blob.canvas = canvas;
+        blob.init();
+        blob.render();
+
+        video.play();
+
+        // Add click event listener to canvas to make video full screen
+        canvas.addEventListener("click", () => {
+            openFullscreen(video);
+        });
+
+        document.addEventListener("fullscreenchange", () => {
+            if (!document.fullscreenElement) {
+                // Make sure the video keep playing
+                video.muted = true;
+                video.play();
+            }
+        });
+    };
+
+    function detachEventListeners() {
+        window.removeEventListener("pointermove", mouseMove);
+        window.removeEventListener("resize", resize);
+        isMouseMoveListenerAdded = false;
+    }
+
+    document.addEventListener("astro:page-load", init);
+    document.addEventListener("astro:before-swap", detachEventListeners);
+
+    const lm = new LifecycleManager();
+
+    lm.onElementLoaded("blob-cursor-follower", (ctx) => {
+        ctx?.add(() => {
+            // Append follower
+            const follower = document.getElementById("blob-cursor-follower");
+            gsap.set(follower, {
+                opacity: 1,
+                scale: 0,
+                transformOrigin: "center center",
+                xPercent: -50,
+                yPercent: -50,
+            });
+            const xTo = gsap.quickTo(follower, "x", { ease: "power3" });
+            const yTo = gsap.quickTo(follower, "y", { ease: "power3" });
+
+            const box = document.getElementById("blob") as HTMLElement;
+
+            box.addEventListener("mousemove", (e) => {
+                const boxRect = box.getBoundingClientRect();
+                xTo(e.clientX - boxRect.left);
+                yTo(e.clientY - boxRect.top - boxRect.height);
+            });
+
+            box.addEventListener("mouseenter", () => {
+                gsap.to(follower, {
+                    duration: 1,
+                    opacity: 1,
+                    scale: 1,
+                    transformOrigin: "center center",
+                });
+            });
+
+            box.addEventListener("mouseleave", () => {
+                gsap.to(follower, {
+                    duration: 0.5,
+                    opacity: 0,
+                    scale: 0,
+                    transformOrigin: "center center",
+                });
+            });
+        });
+    });
+</script>

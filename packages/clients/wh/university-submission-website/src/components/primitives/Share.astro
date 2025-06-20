@@ -1,0 +1,269 @@
+---
+import Button from "@/components/primitives/Button.astro";
+import Link from "@/components/primitives/Link.astro";
+import { getLocalizedSettings } from "@/lib/localization-helpers";
+import { Icon } from "astro-icon/components";
+
+const currentLocale = Astro.currentLocale;
+
+const { contacts } = getLocalizedSettings(currentLocale);
+
+const currentPage = Astro.url;
+
+const availableShare = [
+    {
+        name: "Facebook",
+        icon: "ic:baseline-facebook",
+        url: `https://www.facebook.com/sharer/sharer.php?u=${currentPage}`,
+    },
+    {
+        name: "Twitter",
+        icon: "mdi:twitter",
+        url: `https://twitter.com/intent/tweet?url=${currentPage}`,
+    },
+    {
+        name: "LinkedIn",
+        icon: "mdi:linkedin",
+        url: `https://www.linkedin.com/shareArticle?mini=true&url=${currentPage}`,
+    },
+    {
+        name: "Email",
+        icon: "ic:baseline-email",
+        url: `mailto:?subject=Check%20out%20this%20article&body=${currentPage}`,
+    },
+];
+---
+
+<div
+    x-data=`{
+			modalOpen: false,
+			openSocialModal() {
+				if (navigator.share) {
+					navigator
+						.share({
+							title: "Share",
+							url: window.location.href,
+						})
+						.then(() => {
+							console.log("Share successful");
+						})
+						.catch(console.error);
+				} else {
+					this.modalOpen = true;
+				}
+			}
+		}`
+    @keydown.escape.window="modalOpen = false"
+    class="relative z-10 flex h-auto w-auto flex-wrap items-center gap-4">
+    <Button
+        class="flex gap-3"
+        size="md"
+        style="outline"
+        @click="openSocialModal()">
+        <Icon
+            size={22}
+            name="ic:outline-share"
+        />
+        <span>Share</span>
+    </Button>
+
+    <Link
+        class="flex gap-3"
+        href=`mailto:${contacts.mail}`
+        size="md"
+        style="outline">
+        <Icon
+            size={23}
+            name="ic:outline-mail"
+        />
+        <span class="hidden sm:inline-block">Mail</span>
+    </Link>
+
+    <Link
+        class="flex gap-3"
+        href="#top"
+        size="md"
+        style="outline">
+        <Icon
+            size={23}
+            name="ic:sharp-vertical-align-top"
+        />
+        <span class="hidden sm:inline-block">To Top</span>
+    </Link>
+
+    <template x-teleport="body">
+        <div
+            x-show="modalOpen"
+            class="fixed left-0 top-0 z-[99] flex h-screen w-screen items-center justify-center"
+            x-cloak>
+            <div
+                x-show="modalOpen"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-300"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                @click="modalOpen=false"
+                class="absolute inset-0 h-full w-full bg-black bg-opacity-40">
+            </div>
+            <div
+                x-show="modalOpen"
+                x-trap.inert.noscroll="modalOpen"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                class="relative w-full bg-white px-7 py-6 sm:max-w-lg sm:rounded-lg">
+                <div class="flex items-center justify-between pb-2">
+                    <h3 class="text-lg font-semibold">Share</h3>
+                    <button
+                        @click="modalOpen=false"
+                        class="absolute right-0 top-0 mr-5 mt-5 flex h-8 w-8 items-center justify-center rounded-full text-gray-600 hover:bg-gray-50 hover:text-gray-800">
+                        <svg
+                            class="h-5 w-5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="relative flex w-auto flex-col gap-8">
+                    <div>
+                        {
+                            availableShare.map((shareBtn) => (
+                                <Link
+                                    href={shareBtn.url}
+                                    target="_blank">
+                                    <Icon
+                                        size={60}
+                                        name={shareBtn.icon}
+                                    />
+                                </Link>
+                            ))
+                        }
+                    </div>
+                    <div
+                        class="flex items-center gap-4"
+                        x-data=`{
+							input: window.location.href,
+							copyToClipboard(input) {
+								$refs.clipboardInput.select();
+								$refs.clipboardIcon.classList.add('copied');
+								setTimeout((function() {
+									$refs.clipboardIcon.classList.remove('copied');
+								}).bind(this), 2000);
+								$clipboard(input);
+							}
+					 	}`>
+                        <input
+                            class="grow rounded-xl"
+                            x-ref="clipboardInput"
+                            x-model="input"
+                        />
+                        <button
+                            type="button"
+                            @click="copyToClipboard(input)">
+                            <div
+                                class="clipboard-icon"
+                                x-ref="clipboardIcon">
+                                <svg
+                                    width="16"
+                                    height="32"
+                                    viewBox="0 0 16 32"
+                                    fill="none"
+                                    stroke="black"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M3 12.75V4.25C3 3.42157 3.67157 2.75 4.5 2.75H12C12.8284 2.75 13.5 3.42157 13.5 4.25V12.75C13.5 13.5784 12.8284 14.25 12 14.25H4.5C3.67157 14.25 3 13.5784 3 12.75Z">
+                                    </path>
+                                    <path
+                                        d="M3 12.75V4.25C3 3.42157 3.67157 2.75 4.5 2.75H12C12.8284 2.75 13.5 3.42157 13.5 4.25V12.75C13.5 13.5784 12.8284 14.25 12 14.25H4.5C3.67157 14.25 3 13.5784 3 12.75Z"
+                                        class="page">
+                                    </path>
+                                    <path
+                                        d="M6.25 9.75L7.75 11.25L10.25 7.75"
+                                        class="check"
+                                    ></path>
+                                    <path
+                                        d="M7 1.75001C6.72386 1.75001 6.5 1.97387 6.5 2.25001V3.5C6.5 4.4665 7.2835 5.25 8.25 5.25C9.2165 5.25 10 4.4665 10 3.5V2.25C10 1.97386 9.77614 1.75 9.5 1.75L7 1.75001Z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+<style>
+    .clipboard-icon {
+        width: 32px;
+        height: 32px;
+        padding: 8px;
+        transform: scale(2);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .clipboard-icon svg {
+        opacity: 0.9;
+        transition: opacity 0.2s ease;
+    }
+    .clipboard-icon svg path {
+        stroke-width: 1.5;
+        stroke: white;
+        fill: black;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .clipboard-icon svg path.page {
+        transform-origin: center;
+    }
+    .clipboard-icon svg path.check {
+        transform-origin: center;
+        stroke-dasharray: 8;
+        stroke-dashoffset: 8;
+        stroke: #83f5ad;
+    }
+    .clipboard-icon:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .clipboard-icon:hover svg {
+        opacity: 1;
+    }
+    .clipboard-icon.copied svg path.page {
+        animation: copiedPage 2s ease forwards;
+    }
+    .clipboard-icon.copied svg path.check {
+        stroke-dasharray: 16;
+        transition: all 0.5s ease;
+        animation: copiedPage 2s ease forwards;
+    }
+
+    @keyframes copiedPage {
+        0% {
+            transform: rotate(0) translateY(0);
+            opacity: 1;
+        }
+        50% {
+            transform: rotate(0) translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: rotate(10deg) translateY(16px);
+            opacity: 0;
+        }
+    }
+</style>

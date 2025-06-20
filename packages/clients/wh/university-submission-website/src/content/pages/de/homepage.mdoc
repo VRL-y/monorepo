@@ -1,0 +1,58 @@
+---
+title: Homepage
+subtitle: Homepage
+type: informational
+lastUpdateDate: 2025-03-09
+hideTitle: true
+addPadding: false
+seo:
+  title: Agenzia Web Leader nelle Soluzioni di Web Design Performanti - Your Company Studio
+  description: Your Company Studio eccelle nella creazione di siti web veloci e facili da usare con un focus sul design estetico e l'ottimizzazione SEO, garantendo una presenza online di spicco
+  author: Your Company
+---
+
+{% Hero
+   title="Diamo vita alle vostre visioni più <b>maestose</b>."
+   subtitle="Siamo specializzati in soluzioni che portano risultati al vostro business. <span class=\"text-neutral-400\">Contattateci per una consulenza gratuita.</span>"
+   buttons=[{title: "Contact", href: "/contact", style: "button", icon: "iconamoon:arrow-top-right-1-thin"}] /%}
+
+{% Container %}
+
+{% Services
+   title="Sfruttiamo la nostra vasta esperienza in design e tecnologia per <span class=\"text-neutral-400\">creare brand leader ed esperienze digitali eccezionali.</span>"
+   services=[{title: "Branding", description: "Connettiamo brand e UX, creando identità digitali coerenti su tutti i canali con una guida strategica per garantire una rappresentazione del brand senza soluzione di continuità.", icon: "/src/assets/pages/homepage/marketing-service.png"}, {title: "Soluzioni digitali", description: "Creiamo prodotti aziendali e per i consumatori memorabili, garantendo esperienze utente eccezionali e fornendo sistemi di design completi per una facile iterazione.", icon: "/src/assets/pages/homepage/socialmedia-service.png"}, {title: "Media a pagamento", description: "Progettiamo campagne pubblicitarie di impatto, garantendo un'eccezionale portata e coinvolgimento, e fornendo strategie complete per un'esecuzione senza problemi.", icon: "/src/assets/pages/homepage/paidmedia-service.png"}] /%}
+
+{% RecentWork
+   title="Lavori Recenti"
+   buttons=[{title: "Vedi tutti i lavori", href: "/works", style: "button", icon: "iconamoon:arrow-top-right-1-thin"}] /%}
+
+{% Testimonial
+   testimonial="[Your Company] ci ha creato un sito web fantastico che ha trasformato tutto il nostro traffico in nuovi contatti. Il loro lavoro ha aumentato enormemente il nostro business!"
+   name="Jane Doe" /%}
+
+{% BlogLatest title="Dal Blog" /%}
+
+
+{% ImageText
+   items=[
+     {
+       image: "/assets/IMG_7539.jpg",
+       alt: "A stable and an unstable stack of bricks",
+       text: "This image metaphorically depicts two organizational states. The stable, uniform white stack represents a strong, shared risk culture – the solid foundation upon which effective processes and strategies are built. In contrast, the chaotic, unstable stack illustrates how a weak or inconsistent culture creates inherent fragility, making any system built upon it vulnerable. This visualization reflects my key learning: a sound risk culture is the non-negotiable prerequisite for a resilient and successful IROM system, a topic I found particularly fascinating due to its parallels with establishing a true sustainability culture.",
+       imagePosition: "left"
+     },
+     {
+       image: "/assets/IMG_7542.jpg",
+       alt: "A red and a blue brick",
+       text: "Inspired by the fire incident simulation in our course, this minimalist illustration uses two bricks to represent a core dynamic. The single red brick symbolizes the crisis event itself: the sudden alarm, the problem, the 'heat' of the moment. The blue brick represents the ideal response: a calm, structured, and controlled action designed to 'cool' the situation. This captures my realization that while we cannot always prevent a crisis, a mature risk management system prepares us to counter the 'red' of chaos with the 'blue' of a deliberate and effective response.",
+       imagePosition: "right"
+     },
+     {
+       image: "/assets/51363C35-0881-432E-9311-AD996B4C1EC0.jpg",
+       alt: "A minifigure placing a brick in a circle",
+       text: "This image visualizes my learning that risk management is not a linear project with a defined endpoint, but a continuous, cyclical process. The circle represents the IROM framework, and the (cropped-out) minifigure about to place the 'final' brick symbolizes the ongoing effort required for monitoring, reviewing, and improving the system. It illustrates that the process is never truly 'done,' reflecting the principle of continuous improvement that I initially found challenging to accept due to its demanding nature.",
+       imagePosition: "left"
+     }
+   ] /%}
+
+{% /Container %}

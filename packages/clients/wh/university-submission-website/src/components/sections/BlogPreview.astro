@@ -1,0 +1,67 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Link from "@/components/primitives/Link.astro";
+import { translatePath, unlocalizedUrl } from "@/lib/localization-helpers";
+import { Icon } from "astro-icon/components";
+import { defaultLocale } from "site";
+
+const currentLocale = Astro.currentLocale;
+
+interface Props {
+    post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+
+const unlocalizedPath = unlocalizedUrl(post.slug);
+const localizedPath = translatePath(
+    currentLocale ?? defaultLocale,
+    `/post${unlocalizedPath}`
+);
+---
+
+<div>
+    <Link
+        href={localizedPath}
+        localized={false}
+        class="blog-item group relative inline-block w-full max-w-full rounded-2xl object-cover text-blue-700 underline">
+        <div
+            class="play-button absolute left-1/2 top-1/2 z-10 flex max-w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center text-white opacity-0 transition-all duration-300 group-hover:opacity-100">
+            <div
+                class="flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-white/[0.75] text-black backdrop-blur-[5px]">
+                <Icon
+                    name="iconamoon:arrow-top-right-1-thin"
+                    class="inline-block h-12 w-12 max-w-full align-middle"
+                />
+            </div>
+        </div>
+        {
+            post.data.cover && (
+                <Image
+                    src={post.data.cover}
+                    alt={post.data.title}
+                    class="inline-block h-64 w-full max-w-full cursor-pointer rounded-2xl object-cover align-middle"
+                />
+            )
+        }
+    </Link>
+    <div class="flex flex-col items-start pt-8">
+        <a
+            href={localizedPath}
+            class="mb-3 mt-5 text-3xl font-semibold">
+            {post.data.title}
+        </a>
+    </div>
+</div>
+
+<style>
+    .play-button {
+        width: 1rem;
+        height: 1rem;
+    }
+    .blog-item:hover .play-button {
+        width: 6rem;
+        height: 6rem;
+    }
+</style>

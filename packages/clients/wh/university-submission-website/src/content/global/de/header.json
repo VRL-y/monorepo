@@ -1,0 +1,24 @@
+{
+  "logo": {
+    "imagePath": "/src/assets/global/navigation/logo.svg"
+  },
+  "pages": [
+    {
+      "title": "Home",
+      "link": "/"
+    },
+    {
+      "title": "Über mich",
+      "link": "/about"
+    },
+    {
+      "title": "Blog",
+      "link": "/news"
+    },
+    {
+      "title": "Kontakt",
+      "link": "/contact"
+    }
+  ],
+  "actions": []
+}

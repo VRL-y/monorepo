@@ -11,7 +11,7 @@ reviews:
   profile: chill
   request_changes_workflow: true
   high_level_summary: false
-  high_level_summary_placeholder: ""
+  high_level_summary_placeholder: "@coderabbitai summary"
   high_level_summary_in_walkthrough: true
   auto_title_placeholder: "@coderabbitai"
   auto_title_instructions: ""
@@ -61,7 +61,138 @@ reviews:
     - label: Refactor
       instructions: Improves code structure or readability without changing behavior.
   path_filters: []
-  path_instructions: []
+  path_instructions:
+    - path: "*"
+      instructions: |
+        # VRLY Monorepo Standards
+        ## Single Developer Workflow Optimization
+        - Suggest automation opportunities for repetitive patterns
+        - Identify code that could be extracted to shared packages
+        - Recommend AI-friendly code organization (clear naming, consistent patterns)
+        - Point out opportunities to use Bun's built-in features over external dependencies
+
+        ## Monorepo Best Practices
+        - Ensure proper workspace dependencies (`workspace:*` protocol)
+        - Check for circular dependencies between packages
+        - Verify build order considerations
+        - Suggest shared configuration extraction
+
+        ## Healthcare Compliance (CRITICAL)
+        - Flag ANY potential DSGVO violations
+        - Ensure proper data anonymization/pseudonymization
+        - Check for secure handling of patient data
+        - Verify §203 StGB compliance for medical confidentiality
+
+        ## General Standards
+        - UTF-8 encoding, LF line endings, trailing newline
+        - Max line length: 120 characters
+        - Remove debugging code before production
+        - Self-documenting code with clear naming
+        - YAGNI principle - avoid premature optimization
+
+        ## Testing Philosophy
+        - Suggest critical paths that need tests
+        - Recommend integration tests over unit tests for workflows
+        - Point out edge cases specific to healthcare context
+    - path: "packages/platform/**/*.ts"
+      instructions: |
+        # Platform Package Standards
+        ## Cloudflare Workers Specifics
+        - Check for proper use of Workers APIs (no Node.js APIs)
+        - Verify efficient use of Workers KV, D1, R2
+        - Ensure proper error boundaries for tenant isolation
+        - Check for appropriate use of Durable Objects vs KV
+        - Verify sub-request limits and CPU time considerations
+
+        ## Multi-Tenancy Patterns
+        - Ensure proper tenant isolation at all levels
+        - Check for tenant context propagation
+        - Verify no cross-tenant data leakage
+        - Suggest use of middleware for tenant validation
+
+        ## AI Integration
+        - Check Workers AI usage patterns
+        - Verify proper prompt engineering practices
+        - Ensure AI responses are properly validated
+        - Check for cost-efficient AI model selection
+    - path: "packages/website/**/*"
+      instructions: |
+        # Website Package Standards
+        ## Astro Optimization
+        - Check for proper use of Astro components vs framework components
+        - Verify SSG vs SSR choices for performance
+        - Ensure proper use of Astro Image for optimization
+        - Check for accessibility in marketing pages
+
+        ## SEO & Performance
+        - Verify meta tags and structured data
+        - Check for proper heading hierarchy
+        - Ensure Core Web Vitals optimization
+        - Verify German language SEO considerations
+
+        ## Marketing Content
+        - Check for clear value propositions
+        - Verify DSGVO-compliant contact forms
+        - Ensure proper Impressum implementation
+    - path: "packages/clients/**/*"
+      instructions: |
+        # Client Package Standards
+        ## Customization Patterns
+        - Ensure customizations are configuration-driven
+        - Check for proper extension of platform capabilities
+        - Verify no hard-coded client specifics in platform code
+
+        ## Psychotherapist-Specific
+        - Verify therapy-specific terminology usage
+        - Check for appropriate clinical workflow patterns
+        - Ensure patient privacy at every level
+    - path: "packages/integrations/**/*"
+      instructions: |
+        # Integration Standards
+        ## External API Patterns
+        - Check for proper error handling and retries
+        - Verify API key security (use environment variables)
+        - Ensure rate limiting compliance
+        - Suggest caching strategies for external calls
+
+        ## Make.com Specifics
+        - Verify webhook security
+        - Check for idempotent operations
+        - Ensure proper error reporting back to Make.com
+    - path: "packages/shared/**/*.ts"
+      instructions: |
+        # Shared Package Standards
+        ## Design System Components
+        - Verify WCAG 2.1 AA compliance
+        - Check for proper ARIA labels
+        - Ensure consistent use of design tokens
+        - Verify mobile-first responsive design
+
+        ## Utility Functions
+        - Should be pure functions where possible
+        - Check for proper TypeScript generics usage
+        - Ensure comprehensive JSDoc documentation
+    - path: "**/*.{json,yaml,yml,toml}"
+      instructions: |
+        # Configuration Files
+        - Validate against schemas where available
+        - Check for environment-specific overrides
+        - Ensure no sensitive data in configs
+        - Suggest configuration consolidation opportunities
+    - path: "scripts/**/*"
+      instructions: |
+        # Automation Scripts
+        - Check for proper error handling
+        - Verify idempotency where appropriate
+        - Suggest additional automation opportunities
+        - Ensure scripts are self-documenting
+    - path: "wrangler.{json,toml}"
+      instructions: |
+        # Cloudflare Configuration
+        - Verify proper environment separation
+        - Check for cost-efficient resource allocation
+        - Ensure proper secret management
+        - Verify route patterns for multi-tenancy
   abort_on_close: true
   disable_cache: false
   auto_review:
@@ -72,7 +203,7 @@ reviews:
     drafts: false
     base_branches:
       - "^main$"
-      - "^dev-[0-9]+-.+$"
+      - "^dev.+$"
   finishing_touches:
     docstrings:
       enabled: true

@@ -1,0 +1,347 @@
+---
+import { getCollection } from "astro:content";
+import Container from "@/components/primitives/Container.astro";
+import Link from "@/components/primitives/Link.astro";
+import { getLocalizedSettings } from "@/lib/localization-helpers";
+import { translatePath, unlocalizedUrl } from "@/lib/localization-helpers";
+import { defaultLocale, locales } from "site";
+
+const currentLocale = Astro.currentLocale;
+
+const { footer } = getLocalizedSettings(currentLocale);
+
+function getTranslatedUrl(locale: string): string {
+    const unlocalizedPath = unlocalizedUrl(Astro.url.pathname);
+    return translatePath(locale, unlocalizedPath);
+}
+
+function isActiveLocale(locale: string): boolean {
+    return locale === currentLocale;
+}
+
+const pages = await getCollection("pages");
+const posts = await getCollection("posts");
+
+// get main pages for navigation
+const topInfoPages = pages
+    .map((page) => {
+        const [lang, ...slug] = page.slug.split("/");
+        return {
+            ...page,
+            lang: lang,
+            slug: page.slug.startsWith("/") ? page.slug : `/${page.slug}`,
+        };
+    })
+    .filter(
+        (page) =>
+            page.lang === currentLocale && page.data.type === "informational"
+    )
+    .slice(0, 4);
+
+const lastPosts = posts
+    .map((page) => {
+        const [lang, ...slug] = page.slug.split("/");
+        return {
+            ...page,
+            lang: lang,
+            slug: translatePath(
+                lang,
+                `/post${unlocalizedUrl(`/${page.slug}`)}`
+            ),
+        };
+    })
+    .filter((page) => page.lang === currentLocale)
+
+    .slice(0, 6);
+---
+
+<div
+    class="flex flex-col justify-end bg-black px-4 pb-10 pt-16 text-sm font-medium lg:px-20">
+    <Container>
+        <div class="w-full flex-col items-center">
+            <div class="flex flex-col items-center justify-center text-white">
+                <h2
+                    class="max-w-4xl pb-4 text-center text-4xl leading-normal lg:text-6xl">
+                    Wanja Hummel
+                </h2>
+            </div>
+            <div
+                class="mt-16 grid auto-cols-fr grid-cols-1 grid-rows-[auto] gap-10 lg:grid-cols-[1fr_1fr_1fr]">
+                <div class="col-span-1 row-span-1">
+                    <div
+                        class="mb-5 flex items-center gap-x-[0.63rem] font-semibold uppercase text-white">
+                        <div
+                            class="flex items-center rounded-3xl border-2 border-solid border-white px-5 py-3">
+                            <div>Navigation</div>
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                        <div class="flex flex-col items-start gap-[0.63rem]">
+                            <ul
+                                class="mb-3 list-none space-y-1 text-white/[0.65]">
+                                {
+                                    topInfoPages.map(
+                                        ({ data: { title }, slug }) => (
+                                            <li>
+                                                <a
+                                                    href={slug}
+                                                    class="transition-colors hover:text-white">
+                                                    {title}
+                                                </a>
+                                            </li>
+                                        )
+                                    )
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 row-span-1">
+                    <div
+                        class="mb-5 flex items-center gap-x-[0.63rem] font-semibold uppercase text-white">
+                        <div
+                            class="flex items-center rounded-3xl border-2 border-solid border-white px-5 py-3">
+                            <div>Recent Posts</div>
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                        <div class="flex flex-col items-start gap-[0.63rem]">
+                            <ul
+                                class="mb-3 list-none space-y-1 text-white/[0.65]">
+                                {
+                                    lastPosts.map(
+                                        ({ data: { title }, slug }) => (
+                                            <li>
+                                                <a
+                                                    href={slug}
+                                                    class="text-sm transition-colors hover:text-white">
+                                                    {title}
+                                                </a>
+                                            </li>
+                                        )
+                                    )
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 row-span-1 text-white">
+                    <div
+                        class="mb-5 flex items-center gap-x-[0.63rem] font-semibold uppercase">
+                        <div
+                            class="flex items-center rounded-3xl border-2 border-solid border-white px-5 py-3">
+                            <div>About</div>
+                        </div>
+                    </div>
+                    <div class="mt-10 text-sm">
+                        <div class="flex flex-col items-start">
+                            <p class="leading-relaxed text-white/[0.78]">
+                                This blog documents my journey through risk
+                                management concepts, from traditional frameworks
+                                to antifragility. A personal exploration of
+                                uncertainty, resilience, and strategic thinking.
+                            </p>
+                            <div class="mt-4">
+                                <p class="text-xs text-white/[0.65]">
+                                    University submission website<br />
+                                    Educational purposes only
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-end justify-between pt-4">
+                        <p class="text-sm text-white/[0.78]">
+                            {footer.copyright}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-16">
+                <div class="mt-16 space-y-6 border-t border-white/[0.2] pt-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-white">
+                            Disclaimer zur Nutzung von Künstlicher Intelligenz
+                            (KI) bei der Erstellung dieser Hausarbeit
+                        </h3>
+                        <div class="space-y-2 text-sm text-white/[0.78]">
+                            <p>
+                                Im Rahmen der Erstellung dieser Hausarbeit
+                                wurden KI-gestützte Anwendungen eingesetzt, um
+                                spezifische Aufgaben zu unterstützen. Diese
+                                Aufgaben umfassen:
+                            </p>
+                            <ul class="ml-4 list-inside list-disc space-y-1">
+                                <li>
+                                    Die Korrektur von Rechtschreib- und
+                                    Grammatikfehlern
+                                </li>
+                                <li>Die Übersetzung von Texten (DeepL)</li>
+                            </ul>
+                            <p>
+                                Die Verwendung dieser KI-Tools erfolgte mit der
+                                Absicht, den wissenschaftlichen Schreibprozess
+                                zu unterstützen und zu optimieren. Alle von den
+                                KI-Tools generierten Inhalte wurden gründlich
+                                überprüft und gegebenenfalls angepasst, um
+                                sicherzustellen, dass sie den akademischen
+                                Standards und ethischen Richtlinien dieser
+                                Hochschule entsprechen.
+                            </p>
+                            <p>
+                                Ich bestätige hiermit, dass die KI-Tools
+                                lediglich als Hilfsmittel dienten und dass die
+                                Inhalte dieser Arbeit maßgeblich auf
+                                eigenständiger Forschung und Analyse basieren.
+                                Jede direkte Übernahme von durch KI generierten
+                                Texten oder Ideen wurde entsprechend kenntlich
+                                gemacht und korrekt zitiert.
+                            </p>
+                            <p>
+                                Die Verantwortung für den Inhalt dieser Abgabe,
+                                einschließlich der Originalität, liegt
+                                vollständig bei mir als Verfasser.
+                            </p>
+                            <p class="font-semibold">
+                                Hannover, 15.06.2025<br />Wanja Hummel
+                            </p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-white">
+                            Eidesstattliche Versicherung
+                        </h3>
+                        <div class="space-y-2 text-sm text-white/[0.78]">
+                            <p>
+                                Ich versichere des Eides statt, dass die
+                                vorliegende Abgabe mit dem Titel: <strong
+                                    >„Risk Management: My Learning Journal"</strong
+                                > von mir selbstständig, ohne Hilfe Dritter und ausschließlich
+                                unter der Verwendung der angegebenen Quellen angefertigt
+                                wurde. Alle Stellen, die wörtlich oder sinngemäß
+                                aus Veröffentlichungen entnommen sind, habe ich als
+                                solche kenntlich gemacht. Die Arbeit wurde bisher
+                                in gleicher oder ähnlicher Form, auch nicht in Teilen,
+                                in keiner anderen Prüfungsbehörde vorgelegt und auch
+                                nicht veröffentlicht.
+                            </p>
+                            <p class="font-semibold">
+                                Hannover, 15.06.2025<br />Wanja Hummel
+                            </p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-white">
+                            Literaturverzeichnis
+                        </h3>
+                        <div class="space-y-2 text-sm text-white/[0.78]">
+                            <div class="space-y-1">
+                                <p>
+                                    Adam, P. A. (2024a). <em
+                                        >Integrated Risk and Opportunity
+                                        Management (IROM). The eight essentials
+                                        of a modern management approach</em
+                                    > [Whitepaper]. <a
+                                        href="https://www.patricia-adam.com/"
+                                        class="text-blue-300 hover:text-blue-200 hover:underline"
+                                        >www.patricia-adam.com</a
+                                    >
+                                </p>
+                                <p>
+                                    Adam, P. A. (2024b). <em
+                                        >Risiken und Chancen integriert managen:
+                                        Ein praxiserprobter Ansatz für den
+                                        Mittelstand</em
+                                    >. Springer Gabler.
+                                </p>
+                                <p>
+                                    Chamoun, E., Denewet, N., Manzanera, A., &
+                                    Matai, S. (2019). <em
+                                        >Risk management maturity assessment at
+                                        central banks</em
+                                    > (IMF Working Paper No. 19/303). International
+                                    Monetary Fund.
+                                </p>
+                                <p>
+                                    Gleißner, W. (2017). <em
+                                        >Grundlagen des Risikomanagements: Mit
+                                        kompakten Fallstudien</em
+                                    > (3. Aufl.). Verlag Franz Vahlen.
+                                </p>
+                                <p>
+                                    Hopkin, P. (2010). <em
+                                        >Fundamentals of risk management:
+                                        Understanding, evaluating and
+                                        implementing effective risk management</em
+                                    >. Kogan Page.
+                                </p>
+                                <p>
+                                    International Organization for
+                                    Standardization. (2018). <em
+                                        >Risk management — Guidelines</em
+                                    > (ISO 31000:2018).
+                                </p>
+                                <p>
+                                    International Organization for
+                                    Standardization. (2019). <em
+                                        >Security and resilience — Business
+                                        continuity management systems —
+                                        Requirements</em
+                                    > (ISO 22301:2019).
+                                </p>
+                                <p>
+                                    International Organization for
+                                    Standardization. (2021). <em
+                                        >Compliance management systems —
+                                        Requirements with guidance for use</em
+                                    > (ISO 37301:2021).
+                                </p>
+                                <p>
+                                    Daniell, K. A., Coad, P., Ferrand, N.,
+                                    White, I., Jones, N., Guise, K., Marvell,
+                                    C., Burn, S., & Perez, P. (2008).
+                                    Participatory values-based risk management
+                                    for the water sector. In <em
+                                        >Proceedings of the Fourth International
+                                        Conference on Water Resources and
+                                        Environment Research (ICWRER) "Water
+                                        Down Under 2008"</em
+                                    > (pp. 969–981)
+                                </p>
+                                <p>
+                                    Joubert, J. (2016). <em
+                                        >Embedding risk management within new
+                                        product and service development...</em
+                                    > [Doctoral dissertation, University of Cape
+                                    Town]. University of Cape Town.
+                                </p>
+                                <p>
+                                    Romeike, F., & Hager, P. (2020). <em
+                                        >Erfolgsfaktor Risiko-Management 4.0:
+                                        Methoden, Beispiele, Checklisten</em
+                                    > (4., vollständig überarbeitete und erweiterte
+                                    Aufl.). Springer Gabler.
+                                </p>
+                                <p>
+                                    Scherer, M., & Zagst, R. (2015). An overview
+                                    of copula theory. In K. Glau, M. Scherer, &
+                                    R. Zagst (Eds.), <em
+                                        >Innovations in quantitative risk
+                                        management</em
+                                    > (pp. 129-145). Springer.
+                                </p>
+                                <p>
+                                    Taleb, N. N. (2012). <em
+                                        >Antifragile: Things that gain from
+                                        disorder</em
+                                    >. Random House.
+                                </p>
+                            </div>
+                        </div>
+                    </div>"}}]}
+                </div>
+            </div>
+        </div>
+    </Container>
+</div>
+
+<slot />

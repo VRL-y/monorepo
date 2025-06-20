@@ -1,0 +1,80 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Container from "@/components/primitives/Container.astro";
+import Prose from "@/components/primitives/Prose.astro";
+import Share from "@/components/primitives/Share.astro";
+import Title from "@/components/primitives/Title.astro";
+import { defaultLocale } from "site";
+import BaseLayout from "./BaseLayout.astro";
+
+type Props = {
+    frontmatter: CollectionEntry<"posts">;
+};
+
+const currentLocale = Astro.currentLocale;
+
+interface PostLayoutLocale {
+    writtenBy: string;
+    writtenAt: string;
+}
+
+interface ComponentLocales {
+    [key: string]: PostLayoutLocale;
+}
+
+const componentLocales: ComponentLocales = {
+    de: {
+        writtenBy: "Geschrieben von: ",
+        writtenAt: "am",
+    },
+    en: {
+        writtenBy: "Written by: ",
+        writtenAt: "on",
+    },
+};
+
+const l = componentLocales[currentLocale ?? defaultLocale];
+
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout>
+    <section class="py-32 md:py-56">
+        <Container>
+            <div class="text-center">
+                {
+                    "author" in frontmatter.data &&
+                        frontmatter?.data?.author &&
+                        "pubDate" in frontmatter.data &&
+                        frontmatter?.data?.pubDate && (
+                            <div class="inline-flex items-center gap-4 pb-4 lg:pb-6">
+                                <span class="text-xs font-semibold uppercase tracking-wide text-black">
+                                    <span>
+                                        {l.writtenBy} {frontmatter.data?.author}
+                                        {l.writtenAt}
+                                    </span>
+                                </span>
+                            </div>
+                        )
+                }
+
+                <Title level={1}>{frontmatter.data.title}</Title>
+            </div>
+
+            {
+                "cover" in frontmatter.data && frontmatter.data?.cover && (
+                    <Image
+                        class="lg:rounded-5xl rounded-4xl mt-12 w-full lg:w-auto lg:min-w-[50rem]"
+                        src={frontmatter.data?.cover}
+                        alt={`Cover image for ${frontmatter.data?.title}`}
+                    />
+                )
+            }
+            <Prose><slot /></Prose>
+            <div class="mx-auto w-full max-w-3xl pt-20">
+                <Share />
+            </div>
+        </Container>
+    </section>
+</BaseLayout>
