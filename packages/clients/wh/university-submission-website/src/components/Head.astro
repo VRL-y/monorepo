@@ -20,7 +20,7 @@ const pathWithSlash = Astro.url.pathname.endsWith("/")
     : `${Astro.url.pathname}/`;
 
 const shareImage = new URL(
-    "/og.jpg",
+    `${pathWithSlash}og.png`, // Für dynamische Generierung
     new URL(pathWithSlash, Astro.site)
 ).toString();
 
