@@ -14,7 +14,7 @@ This project was strongly inspired by a template found on Webflow which I can lo
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/majesticooss/mizar)
 
-### [🧪 Site preview →](https://https://university-submission-website.vrly.workers.dev/)
+### [🧪 Site preview →](https://university-submission-website.vrly.workers.dev/)
 
 ### [🧑‍🚀 Astro website →](https://astro.build/)
 
