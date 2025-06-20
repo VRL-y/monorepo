@@ -1,88 +1,88 @@
 <div
-  transition:persist
-  id="astro-loading-indicator"
-  class="astro-loading-indicator bg-primary-950 pointer-events-none fixed top-0 left-0 z-50 h-1 w-full"
->
+    transition:persist
+    id="astro-loading-indicator"
+    class="astro-loading-indicator bg-primary-950 pointer-events-none fixed left-0 top-0 z-50 h-1 w-full">
 </div>
 
 <style>
-  .astro-loading-indicator {
-    --progress: 0;
-    --animation-duration: 300ms;
-    --opacity-animation-duration: 150ms;
-    transition:
-      transform var(--animation-duration) ease-out,
-      opacity var(--opacity-animation-duration)
-        var(--opacity-animation-duration) ease-in;
-    transform: translate3d(0, 0, 0) scaleX(var(--progress, 0));
-    transform-origin: 0;
-  }
+    .astro-loading-indicator {
+        --progress: 0;
+        --animation-duration: 300ms;
+        --opacity-animation-duration: 150ms;
+        transition:
+            transform var(--animation-duration) ease-out,
+            opacity var(--opacity-animation-duration)
+                var(--opacity-animation-duration) ease-in;
+        transform: translate3d(0, 0, 0) scaleX(var(--progress, 0));
+        transform-origin: 0;
+    }
 </style>
 
 <script>
-  let animationDuration = 50;
-  let progress = 0.25;
-  let opacity = 0;
-  let trickleInterval: number | undefined = undefined;
+    let animationDuration = 50;
+    let progress = 0.25;
+    let opacity = 0;
+    let trickleInterval: ReturnType<typeof window.setInterval> | undefined =
+        undefined;
 
-  let preparationTimestamp: number = 0;
+    let preparationTimestamp: number = 0;
 
-  const element = document.getElementById("astro-loading-indicator");
+    const element = document.getElementById("astro-loading-indicator");
 
-  /** @param {typeof progress} _progress */
-  const setProgress = (_progress: number) => {
-    progress = _progress;
-    element?.style.setProperty("--progress", String(progress));
-  };
+    /** @param {typeof progress} _progress */
+    const setProgress = (_progress: number) => {
+        progress = _progress;
+        element?.style.setProperty("--progress", String(progress));
+    };
 
-  /** @param {typeof opacity} _opacity */
-  const setOpacity = (_opacity: number) => {
-    opacity = _opacity;
-    element?.style.setProperty("opacity", String(opacity));
-  };
+    /** @param {typeof opacity} _opacity */
+    const setOpacity = (_opacity: number) => {
+        opacity = _opacity;
+        element?.style.setProperty("opacity", String(opacity));
+    };
 
-  const setAnimationDuration = (duration: number) => {
-    animationDuration = duration;
+    const setAnimationDuration = (duration: number) => {
+        animationDuration = duration;
 
-    let styleAnimationDuration = Math.min(300, animationDuration);
+        let styleAnimationDuration = Math.min(300, animationDuration);
 
-    element?.style.setProperty(
-      "--animation-duration",
-      `${styleAnimationDuration}ms`,
-    );
-    element?.style.setProperty(
-      "--opacity-animation-duration",
-      `${styleAnimationDuration / 2}ms`,
-    );
+        element?.style.setProperty(
+            "--animation-duration",
+            `${styleAnimationDuration}ms`
+        );
+        element?.style.setProperty(
+            "--opacity-animation-duration",
+            `${styleAnimationDuration / 2}ms`
+        );
 
-    return styleAnimationDuration;
-  };
+        return styleAnimationDuration;
+    };
 
-  setOpacity(opacity);
+    setOpacity(opacity);
 
-  document.addEventListener("astro:before-preparation", () => {
-    preparationTimestamp = performance.now();
-    setOpacity(1);
-    trickleInterval = window.setInterval(() => {
-      setProgress(progress + Math.random() * 0.05);
-    }, animationDuration * 0.05);
-  });
+    document.addEventListener("astro:before-preparation", () => {
+        preparationTimestamp = performance.now();
+        setOpacity(1);
+        trickleInterval = window.setInterval(() => {
+            setProgress(progress + Math.random() * 0.05);
+        }, animationDuration * 0.05);
+    });
 
-  document.addEventListener("astro:before-swap", (ev) => {
-    let computedDuration = performance.now() - preparationTimestamp;
-    var styleAnimationDuration = setAnimationDuration(computedDuration);
+    document.addEventListener("astro:before-swap", (ev) => {
+        let computedDuration = performance.now() - preparationTimestamp;
+        var styleAnimationDuration = setAnimationDuration(computedDuration);
 
-    window.clearInterval(trickleInterval);
-    trickleInterval = undefined;
+        window.clearInterval(trickleInterval);
+        trickleInterval = undefined;
 
-    setProgress(1);
+        setProgress(1);
 
-    window.setTimeout(() => {
-      setOpacity(0);
-    }, styleAnimationDuration / 2);
+        window.setTimeout(() => {
+            setOpacity(0);
+        }, styleAnimationDuration / 2);
 
-    window.setTimeout(() => {
-      setProgress(0.25);
-    }, styleAnimationDuration * 1.5);
-  });
+        window.setTimeout(() => {
+            setProgress(0.25);
+        }, styleAnimationDuration * 1.5);
+    });
 </script>
